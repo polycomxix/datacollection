@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Data Collection Application</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/one-page-wonder.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>window.twttr = (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {};
+      if (d.getElementById(id)) return t;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://platform.twitter.com/widgets.js";
+      fjs.parentNode.insertBefore(js, fjs);
+     
+      t._e = [];
+      t.ready = function(f) {
+            t._e.push(f);
+          };
+         
+          return t;
+        }(document, "script", "twitter-wjs"));
+    </script>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="./index.html">Data Collection Application</a>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Content -->
+    <div class="section-container">
+        <div class="container">
+            <!-- Title -->
+
+                    <!-- Jumbotron Header -->
+                    <div class="">
+                        <h1>Twitter Results</h1>
+                        <div class="loading text-center result-container">
+                            <img src="./images/ajax-loader.gif">
+                        </div>
+                        <div class="twitter-result result-container">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="thumbnail"></div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div>@screenname Twitter fan: 3 years 4 months</div>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <div>3,763</div>
+                                            <div>Tweets</div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div>255</div>
+                                            <div>Following</div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div>150</div>
+                                            <div>Follower</div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div>150</div>
+                                            <div>Like</div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <h3>Retweet of Me</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="button-group">
+                                <a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=Hello%20world"data-size="large">Share on Twitter</a>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+    </div>
+    <!-- /.container -->
+    <!-- Page Content -->
+    <div id="quiz" class="section-container">
+        <div class="container">
+            <!-- Title -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>Recommended Quizzes</h2>
+                </div>
+            </div>
+            <!-- /.row -->
+
+            <!-- Page Features -->
+            <div class="row text-center">
+
+                <div class="col-md-4 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="http://placehold.it/800x500" alt="">
+                        <div class="caption">
+                            <h3>SNS Usage Questionnaire</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <p>
+                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="1">Start</button> 
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="http://placehold.it/800x500" alt="">
+                        <div class="caption">
+                            <h3>Facebook Quiz</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <p>
+                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="2">Start</button> 
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 hero-feature">
+                    <div class="thumbnail">
+                        <img src="http://placehold.it/800x500" alt="">
+                        <div class="caption">
+                            <h3>Twitter Quiz</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <p>
+                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="3">Start</button>  
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+
+        </div>
+    </div>
+    <!-- /.container -->
+    <!-- Footer -->
+    <div class="section-container section-container-footer">
+        <div class="container">
+            <footer>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center">    
+                        <p>Copyright &copy; 2016 Ohkura Lab All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <!-- /.container -->
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".twitter-result").hide();
+        $.get("./twitter/get_tweet_data.php", function (data) {
+            console.log(data);
+            console.log(data['name']);
+            $(".loading").hide();
+            $(".twitter-result").show();
+        },'json');
+    });
+</script>
