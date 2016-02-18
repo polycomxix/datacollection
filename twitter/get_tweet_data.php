@@ -11,7 +11,9 @@
 	
 
 	$tuser = new Profile();
-	$tact = array();
+	//$tact = array();
+
+	$cookie_expired = time() + (60 * 20);//60sec*20 = 20mins 86400 = 1 day
 
 	$since_date = new DateTime();
 	$since_date->setDate(2015,1,1);
@@ -25,9 +27,9 @@
 	//echo "PID:".$_COOKIE['pid'];
 	GetTwitterProfile($connection);
 	echo "TID:".$tuser->id;
-	//GetTwitterActivities($connection,$tuser->id);
+	GetTwitterActivities($connection,$tuser->id);
 	//print_r($tact);
-	SaveTwitterProfile($tuser);
+	//SaveTwitterProfile($tuser);
 
 
 	function GetTwitterProfile($tconn)
@@ -50,17 +52,20 @@
 	function GetTwitterActivities($tconn, $userid)
 	{	
 		global $tact, $since_date;
-		$i=1;
-		for($j=1; $j<=MAX_PAGE; $j++)
+		$tact = array();
+		$k=1;
+		for($i=1; $i<=MAX_PAGE; $i++)//MAX_PAGE
 		{
-				$tweet = $tconn->get("statuses/user_timeline",array("count"=>200,"screen_name"=>"tangjaidee","page"=>$j));//oyoeoyo polycomxix tangjaidee
+				$tweet = $tconn->get("statuses/user_timeline",array("count"=>200,"screen_name"=>"tangjaidee","page"=>$i));//oyoeoyo polycomxix tangjaidee
 				if(empty($tweet))
 					break;
 				else
 				{
 					$break = false;
+					$j = 1;
 					foreach($tweet as $t)
 					{
+						//echo "j:".$j;
 						$created_at = date( 'Y-m-d H:i:s', strtotime($t->created_at));
 						if(empty($t) || $created_at<$since_date)
 						{
@@ -97,13 +102,68 @@
 						$tweetact->created_at 	= date( 'Y-m-d H:i:s', strtotime($t->created_at));
 
 						$tact[] = $tweetact;
+						if($j%50==0)
+						{
+							//echo "<br/> J:".$j;
+							SaveTweetActToDb($tact);
+							unset($tact);
+							$tact = array();
+						}
+						//echo $k."-".$tweetact->tweet_id."-".$tweetact->created_at."<br/>"; 
+						$j++; $k++;
+						//print_r($tact);
 					}
+					//echo "COUNT:".count($tact);
+					if(count($tact)>0)
+					{
+						//echo "a <br/>";
+						SaveTweetActToDb($tact);
+						unset($tact);
+						$tact = array();
+					}
+						
+
 					if($break) //no data, then stop looping
-					break;
+						break;
+					
 				}
+
+				//print_r($tact);
+				
 		}
 
 	}
+	function SaveTweetActToDb($tacts)
+	{
+		global $conn, $CURRENT_DATE, $tuser;
+		//$_COOKIE['pid']=77;
+		$pid = 77;
+
+		mysqli_query($conn,"START TRANSACTION");
+		try{
+			$sql = "INSERT INTO tb_tweet (user_id, pid, tweet_id, action, media, source, created_at) VALUES ";
+			$i=1;
+			foreach($tacts as $ts)
+			{
+				if($i!=1)
+					$sql .=", ";
+
+				$sql .= "('$ts->user_id','$pid','$ts->tweet_id','$ts->action','$ts->media','$ts->source','$ts->created_at')";
+				$i++;
+			}
+			//echo $sql;
+			if (!mysqli_query($conn, $sql)) {
+							    //echo "Insert ID:".$pid."\r\n";
+				echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+			} 
+			
+			mysqli_query($conn,"COMMIT");
+		}catch (Exception $e){
+			mysqli_query($conn,"ROLLBACK");
+		}
+		//$conn->close();
+	}
+
 	function GetTextFromTag($data)
 	{
 		$regex = '#<\s*?a\b[^>]*>(.*?)</a\b[^>]*>#s';
@@ -173,7 +233,7 @@
 
 	function SaveTwitterProfile($user)
 	{
-		global $conn, $CURRENT_DATE;
+		global $conn, $cookie_expired, $CURRENT_DATE;
 		$IsSuccess = true;
 
 		mysqli_query($conn,"START TRANSACTION");
@@ -207,8 +267,6 @@
 						if(!CreateTwitterProfile($user,$pid))
 							$IsSuccess = false;
 					}
-						
-					
 				}
 				else //new user
 				{
@@ -218,6 +276,7 @@
 					//Create new twitter profile in tb_twitter_profile
 					if($pid!=false)
 					{
+						setcookie('pid', $pid, $cookie_expired, "/"); 
 						if(!CreateTwitterProfile($user,$pid))
 							$IsSuccess = false;
 					}
@@ -235,8 +294,5 @@
 		}
 		$conn->close();
 	}
-	function SaveTweetActToDb($tacts)
-	{
-		
-	}
+
 ?>
