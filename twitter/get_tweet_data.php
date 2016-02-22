@@ -6,30 +6,47 @@
 	require 'autoload.php';
 	use Abraham\TwitterOAuth\TwitterOAuth;
 
-	//Initial Variable
+	/*------------Initial Variable-------------*/
 	const MAX_PAGE = 16;
-	
-
-	$tuser = new Profile();
-	//$tact = array();
 
 	$cookie_expired = time() + (60 * 20);//60sec*20 = 20mins 86400 = 1 day
 
+	$CURRENT_DATE = date_format(new DateTime("now", new DateTimeZone('Asia/Tokyo')),'Y-m-d H:i:s');
+	
 	$since_date = new DateTime();
 	$since_date->setDate(2015,1,1);
 	$since_date = date_format($since_date,'Y-m-d H:i:s');
 
-	$CURRENT_DATE = date_format(new DateTime("now", new DateTimeZone('Asia/Tokyo')),'Y-m-d H:i:s');
+	$tuser = new Profile();
+
+	$gpid = isset($_COOKIE['pid']) ? $_COOKIE['pid'] : null;
+
+	/*------------/Initial Variable-------------*/
+
 	//Prepare twitter connection
 	$access_token = $_SESSION['access_token'];
 	$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'] , $access_token['oauth_token_secret']);
-
-	//echo "PID:".$_COOKIE['pid'];
+	//unset($_COOKIE['pid']);
+	//setcookie('pid','', time()-3600);
+	//$_COOKIE['pid'] = null;
+	echo "PID:".$_COOKIE['pid'];
 	GetTwitterProfile($connection);
 	echo "TID:".$tuser->id;
-	GetTwitterActivities($connection,$tuser->id);
+	if(isset($tuser->id))
+	{
+		if(SaveTwitterProfile($tuser))
+		{
+			echo "<br/> GET Tweet";
+			GetTwitterActivities($connection,$tuser->id);
+			setcookie('pid', $gpid, $cookie_expired, "/");
+		}
+		/*else{
+			$_COOKIE['pid'] = null;
+		}	*/
+	}
+	$conn->close();
 	//print_r($tact);
-	//SaveTwitterProfile($tuser);
+	
 
 
 	function GetTwitterProfile($tconn)
@@ -51,118 +68,95 @@
 
 	function GetTwitterActivities($tconn, $userid)
 	{	
-		global $tact, $since_date;
+		global $tact, $since_date, $conn;
 		$tact = array();
 		$k=1;
-		for($i=1; $i<=MAX_PAGE; $i++)//MAX_PAGE
-		{
-				$tweet = $tconn->get("statuses/user_timeline",array("count"=>200,"screen_name"=>"tangjaidee","page"=>$i));//oyoeoyo polycomxix tangjaidee
-				if(empty($tweet))
-					break;
-				else
-				{
-					$break = false;
-					$j = 1;
-					foreach($tweet as $t)
+		mysqli_query($conn,"START TRANSACTION");
+		try{
+			for($i=1; $i<=MAX_PAGE; $i++)//MAX_PAGE
+			{
+					$tweet = $tconn->get("statuses/user_timeline",array("count"=>200,"screen_name"=>"oyoeoyo","page"=>$i));//oyoeoyo polycomxix tangjaidee
+					if(empty($tweet))
+						break;
+					else
 					{
-						//echo "j:".$j;
-						$created_at = date( 'Y-m-d H:i:s', strtotime($t->created_at));
-						if(empty($t) || $created_at<$since_date)
+						$break = false;
+						$j = 1;
+						foreach($tweet as $t)
 						{
-							$break = true;
-							break;
+							//echo "j:".$j;
+							$created_at = date( 'Y-m-d H:i:s', strtotime($t->created_at));
+							if(empty($t) || $created_at<$since_date)
+							{
+								$break = true;
+								break;
+							}
+
+							$tweetact = new Activities();
+							$tweetact->user_id 		= $userid;
+							$tweetact->tweet_id 	= $t->id;
+
+							//action tweet|retweet|reply-user|reply-tweet|reply-screenname
+							$action = "tweet";
+							if($t->retweeted){
+								$action="retweeted";}
+							else if($t->in_reply_to_user_id!=null){
+								$action="reply-user";}
+							else if($t->in_reply_to_status_id!=null){
+								$action="reply-tweet";}
+							else if($t->in_reply_to_screen_name!=null){
+								$action="reply-screenname";}
+
+							$tweetact->action 		= $action;
+
+							$tweettype = "text";
+							if(isset($t->entities->media))
+							{
+								if(isset($t->entities->media->type))
+									$tweettype = $t->entities->media->type;
+							}
+
+							$tweetact->media 		= $tweettype;
+							$tweetact->source 		= GetTextFromTag($t->source);
+							$tweetact->created_at 	= date( 'Y-m-d H:i:s', strtotime($t->created_at));
+
+							$tact[] = $tweetact;
+							if($j%50==0)
+							{
+								//echo "<br/> J:".$j;
+								SaveTweetActToDb($tact);
+								unset($tact);
+								$tact = array();
+							}
+							//echo $k."-".$tweetact->tweet_id."-".$tweetact->created_at."<br/>"; 
+							$j++; $k++;
+							//print_r($tact);
 						}
-
-						$tweetact = new Activities();
-						$tweetact->user_id 		= $userid;
-						$tweetact->tweet_id 	= $t->id;
-
-						//action tweet|retweet|reply-user|reply-tweet|reply-screenname
-						$action = "tweet";
-						if($t->retweeted){
-							$action="retweeted";}
-						else if($t->in_reply_to_user_id!=null){
-							$action="reply-user";}
-						else if($t->in_reply_to_status_id!=null){
-							$action="reply-tweet";}
-						else if($t->in_reply_to_screen_name!=null){
-							$action="reply-screenname";}
-
-						$tweetact->action 		= $action;
-
-						$tweettype = "text";
-						if(isset($t->entities->media))
+						//echo "COUNT:".count($tact);
+						if(count($tact)>0)
 						{
-							if(isset($t->entities->media->type))
-								$tweettype = $t->entities->media->type;
-						}
-
-						$tweetact->media 		= $tweettype;
-						$tweetact->source 		= GetTextFromTag($t->source);
-						$tweetact->created_at 	= date( 'Y-m-d H:i:s', strtotime($t->created_at));
-
-						$tact[] = $tweetact;
-						if($j%50==0)
-						{
-							//echo "<br/> J:".$j;
+							//echo "a <br/>";
 							SaveTweetActToDb($tact);
 							unset($tact);
 							$tact = array();
 						}
-						//echo $k."-".$tweetact->tweet_id."-".$tweetact->created_at."<br/>"; 
-						$j++; $k++;
-						//print_r($tact);
-					}
-					//echo "COUNT:".count($tact);
-					if(count($tact)>0)
-					{
-						//echo "a <br/>";
-						SaveTweetActToDb($tact);
-						unset($tact);
-						$tact = array();
-					}
+							
+
+						if($break) //no data, then stop looping
+							break;
 						
+					}
 
-					if($break) //no data, then stop looping
-						break;
+					//print_r($tact);
 					
-				}
-
-				//print_r($tact);
-				
-		}
-
-	}
-	function SaveTweetActToDb($tacts)
-	{
-		global $conn, $CURRENT_DATE, $tuser;
-		//$_COOKIE['pid']=77;
-		$pid = 77;
-
-		mysqli_query($conn,"START TRANSACTION");
-		try{
-			$sql = "INSERT INTO tb_tweet (user_id, pid, tweet_id, action, media, source, created_at) VALUES ";
-			$i=1;
-			foreach($tacts as $ts)
-			{
-				if($i!=1)
-					$sql .=", ";
-
-				$sql .= "('$ts->user_id','$pid','$ts->tweet_id','$ts->action','$ts->media','$ts->source','$ts->created_at')";
-				$i++;
 			}
-			//echo $sql;
-			if (!mysqli_query($conn, $sql)) {
-							    //echo "Insert ID:".$pid."\r\n";
-				echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-			} 
-			
-			mysqli_query($conn,"COMMIT");
+		mysqli_query($conn,"COMMIT");
 		}catch (Exception $e){
 			mysqli_query($conn,"ROLLBACK");
 		}
 		//$conn->close();
 	}
+
 
 	function GetTextFromTag($data)
 	{
@@ -233,7 +227,7 @@
 
 	function SaveTwitterProfile($user)
 	{
-		global $conn, $cookie_expired, $CURRENT_DATE;
+		global $conn, $cookie_expired, $CURRENT_DATE, $gpid;
 		$IsSuccess = true;
 
 		mysqli_query($conn,"START TRANSACTION");
@@ -245,10 +239,11 @@
 
 			if(!$hasTwitterId)
 			{
-				if(isset($_COOKIE['pid']))//Current User
+				if($gpid!=null)//Current User
 				{
 					//Update tb_user
-					$pid = $_COOKIE['pid'];
+					echo "<br/> Update user";
+					$pid = $gpid;
 					$country = null;
 					$twitter_id = $user->id;
 
@@ -271,12 +266,13 @@
 				else //new user
 				{
 					//Create new user in tb_user
+					echo "<br/> New user";
 					$pid = CreateUserProfile($user->id, $user->location);
 					echo "PID:".$pid;
 					//Create new twitter profile in tb_twitter_profile
 					if($pid!=false)
 					{
-						setcookie('pid', $pid, $cookie_expired, "/"); 
+						$gpid=$pid; 
 						if(!CreateTwitterProfile($user,$pid))
 							$IsSuccess = false;
 					}
@@ -292,7 +288,35 @@
 		}catch (Exception $e){
 			mysqli_query($conn,"ROLLBACK");
 		}
-		$conn->close();
+		//$conn->close();
+		return $IsSuccess;
+	}
+
+	function SaveTweetActToDb($tacts)
+	{
+		global $conn, $CURRENT_DATE, $tuser, $gpid;
+		//$_COOKIE['pid']=77;
+		$pid = $gpid;
+		echo "<br/> >".$pid;
+
+		
+			$sql = "INSERT INTO tb_tweet (user_id, pid, tweet_id, action, media, source, created_at) VALUES ";
+			$i=1;
+			foreach($tacts as $ts)
+			{
+				if($i!=1)
+					$sql .=", ";
+
+				$sql .= "('$ts->user_id','$pid','$ts->tweet_id','$ts->action','$ts->media','$ts->source','$ts->created_at')";
+				$i++;
+			}
+			//echo $sql;
+			if (!mysqli_query($conn, $sql)) {
+							    //echo "Insert ID:".$pid."\r\n";
+				echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+			} 
+			
+			
 	}
 
 ?>
