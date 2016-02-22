@@ -65,17 +65,40 @@
 		$tuser->location 	= $user->location != null ? $user->location : $user->time_zone;
 
 	}
-
+	function GetLatestUserTweet($conn, $userid)
+	{
+		$sql = "SELECT * FROM tb_tweet WHERE user_id= $userid AND created_at = (SELECT MAX(`created_at`) FROM tb_tweet)";
+		$result = $conn->query($sql);
+		if ($result->num_rows > 0) {
+			// output data of each row
+			$row = $result->fetch_assoc();
+			print_r($row);
+			return $row['tweet'];
+		}
+		return null;
+	}
 	function GetTwitterActivities($tconn, $userid)
 	{	
 		global $tact, $since_date, $conn;
 		$tact = array();
 		$k=1;
+
+		//Define Parameter
+		$param = array("count"=>200,"screen_name"=>"tangjaidee","page"=>null);//oyoeoyo polycomxix tangjaidee
+
+		//Prevent incase update
+		$since_id=GetLatestUserTweet($conn, $userid);
+		if($since_id!=null) //update more tweet data
+		{
+			$param['since_id']=$since_id;
+		}
+		print_r($param);
 		mysqli_query($conn,"START TRANSACTION");
 		try{
 			for($i=1; $i<=MAX_PAGE; $i++)//MAX_PAGE
 			{
-					$tweet = $tconn->get("statuses/user_timeline",array("count"=>200,"screen_name"=>"oyoeoyo","page"=>$i));//oyoeoyo polycomxix tangjaidee
+					$param['page'] = $i;
+					$tweet = $tconn->get("statuses/user_timeline",$param);
 					if(empty($tweet))
 						break;
 					else
