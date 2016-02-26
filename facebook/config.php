@@ -10,5 +10,5 @@
 
 	//Login helper with redirect
 	$helper = $fb->getRedirectLoginHelper();
-	$permissions = ['email']; //Optional permissions
+	$permissions = ['email','user_birthday','user_friends','user_location','user_posts']; //Optional permissions
 ?>

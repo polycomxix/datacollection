@@ -11,20 +11,9 @@
 	if (!$conn) {
 	    die("Connection failed: " . mysqli_connect_error());
 	}
-	//echo "Connected successfully";
 
-	/*$sql = "SELECT * FROM tb_user";
-	$result = $conn->query($sql);
 
-	if ($result->num_rows > 0) {
-	    // output data of each row
-	    while($row = $result->fetch_assoc()) {
-	        //echo "id: " . $row["id"]. " - Name: " . $row["firstname"]. " " . $row["lastname"]. "<br>";
-	        print_r($row);
-	    }
-	} else {
-	    echo "0 results";
-	}
-	$conn->close();*/
+	$cookie_expired = time() + (60 * 20);//60sec*20 = 20mins 86400 = 1 day
 
+	$CURRENT_DATE = date_format(new DateTime("now", new DateTimeZone('Asia/Tokyo')),'Y-m-d H:i:s');
 ?>
