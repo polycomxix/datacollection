@@ -16,4 +16,8 @@
 	$cookie_expired = time() + (60 * 20);//60sec*20 = 20mins 86400 = 1 day
 
 	$CURRENT_DATE = date_format(new DateTime("now", new DateTimeZone('Asia/Tokyo')),'Y-m-d H:i:s');
+
+	$since_date = new DateTime();
+	$since_date->setDate(2015,1,1);
+	$since_date = date_format($since_date,'Y-m-d H:i:s');
 ?>

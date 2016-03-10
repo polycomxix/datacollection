@@ -25,4 +25,23 @@
 		function set_total_friend($new_total_friend) {$this->total_friend = $new_total_friend;}
 		function get_total_friend() {return $this->total_friend;}
 	}
+	class post
+	{
+		var $post_id;
+		function set_post_id($new_post_id) {$this->post_id = $new_post_id;}
+		function get_post_id() {return $this->post_id;}
+
+		var $created_at;
+		function set_created_at($new_created_at) {$this->created_at = $new_created_at;}
+		function get_created_at() {return $this->created_at;}
+
+		var $action;
+		function set_action($new_action) {$this->action = $new_action;}
+		function get_action() {return $this->action;}
+
+		var $media;
+		function set_media($new_media) {$this->media = $new_media;}
+		function get_media() {return $this->media;}
+
+	}
 ?>

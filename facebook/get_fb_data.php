@@ -10,7 +10,13 @@
 	{
 
 		$access_token = $_SESSION['access_token'];
-		GetFacebookUserProfile($access_token);
+		$fbid = GetFacebookUserProfile($access_token);
+		echo "FBID:".$fbid."<br/>";
+		if($fbid != false)
+		{
+			GetFacebookActivities($access_token,$fbid);
+		}
+		
 
 	}
 	else
@@ -35,11 +41,9 @@
 		$fuser->total_friend= $user->getField('friends')->getTotalCount();
 
 		//SaveFacebookUserProfile
+		/*mysqli_query($conn,"START TRANSACTION");
 		try{
-			//$pid = CreateUserProfile($fuser);
-			//echo "PID:".$pid;
-			//$success = CreateFacebookUserProfile($fuser,$pid);
-			$gpid = 93;
+			//$gpid = 93;
 			$result = IsCurrentUser('tb_user','fb_id',$fuser->id);
 			$hasFacebookId = ($result->num_rows > 0) ? true : false;
 			if(!$hasFacebookId)
@@ -87,15 +91,58 @@
 					$IsSuccess = false;
 			}
 			
-
+			mysqli_query($conn,"COMMIT");
 		}catch(Exception $e){
-
+			mysqli_query($conn,"ROLLBACK");
 		}
+		$conn->close();*/
+		return $IsSuccess==true ? $fuser->id : $IsSuccess;
 	}
 	
-	function GetFacebookActivities()
+	function GetFacebookActivities($access_token, $fbid)
 	{
+		global $fb, $conn, $gpid, $since_date;
+		$IsSuccess = true;
+		$fact = array();
 
+		$response = $fb->get('me/posts?fields=id,created_time,type,status_type&limit=200', $access_token);
+		$post = $response->getGraphEdge();
+		//$nextPageOfPost = $fb->next($post);
+		//$a = $fb->next($nextPageOfPost);
+		//print_r($post);
+		//print_r($a);
+		//echo $post;
+		$i=1;
+		do{
+			if($i!=1)//next loop
+			{
+				$post = $fb->next($post);
+			}
+			$j=1;
+			foreach($post as $p)
+			{
+				echo "Count:".$i."-".$j."-".date_format($p->getField('created_time'),'Y-m-d H:i:s')."<br/>";
+				$j++;
+			}
+
+			$i++;
+		}while($i!=5);
+
+		
+		/*foreach($post as $p)
+		{
+			//echo "ID:".$p->getField('id')."<br/>";
+			$fbpost = new Post();
+			$fbpost->post_id 	= $p->getField('id');
+			$fbpost->created_at	= date_format($p->getField('created_time'),'Y-m-d H:i:s');
+			$fbpost->action		= $p->getField('status_type');
+			$fbpost->media 		= $p->getField('type');
+
+			$fact[] = $fbpost;
+			//echo "i:".$i.$fbpost->post_id."<br/>";
+			$i++;
+		}*/
+		//print_r($fact);
 	}
 	function IsCurrentUser($tb_name, $field, $val) //already has record in tb_user or tb_twitter profile
 	{
