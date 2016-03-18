@@ -107,11 +107,7 @@
 
 		$response = $fb->get('me/posts?fields=id,created_time,type,status_type&limit=200', $access_token);
 		$post = $response->getGraphEdge();
-		//$nextPageOfPost = $fb->next($post);
-		//$a = $fb->next($nextPageOfPost);
-		//print_r($post);
-		//print_r($a);
-		//echo $post;
+
 		$i=1;
 		do{
 			if($i!=1)//next loop
