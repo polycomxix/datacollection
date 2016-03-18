@@ -110,7 +110,7 @@
                             <h3>SNS Usage Questionnaire</h3>
                             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                             <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="1">Start</button> 
+                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="1">Let's start!</button> 
                             </p>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                             <h3>Facebook Quiz</h3>
                             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                             <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="2">Start</button> 
+                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="2">Let's start!</button> 
                             </p>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                             <h3>Twitter Quiz</h3>
                             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                             <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="3">Connect with Twitter</button>  
+                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="3">Let's start!</button>  
                             </p>
                         </div>
                     </div>
@@ -222,7 +222,7 @@
 <script type="text/javascript">
     $(document).ready(function(){
         //$("#modal-agreement").modal();
-        //Cookies.remove('pid');
+        Cookies.remove('pid');
         console.log(Cookies.get("pid"));
         $("#modal-agreement").on('shown.bs.modal',function(event){
             var button = $(event.relatedTarget);

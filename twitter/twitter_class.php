@@ -38,7 +38,7 @@
 	class activities
 	{
 		var $user_id;
-		function set_user_id($new_user_id) {$this->id = $new_user_id;}
+		function set_user_id($new_user_id) {$this->user_id = $new_user_id;}
 		function get_user_id() {return $this->user_id;}
 
 		var $tweet_id;
@@ -60,6 +60,26 @@
 		var $created_at;
 		function set_created_at($new_created_at) {$this->created_at = $new_created_at;}
 		function get_created_at() {return $this->created_at;}
+	}
+
+	class favorites
+	{
+		var $user_id;
+		function set_user_id($new_user_id) {$this->user_id = $new_user_id;}
+		function get_user_id() {return $this->user_id;}
+
+		var $fav_id;
+		function set_fav_id($new_fav_id) {$this->fav_id = $new_fav_id;}
+		function get_fav_id() {return $this->fav_id;}
+
+		var $parent_id;
+		function set_parent_id($new_parent_id) {$this->parent_id = $new_parent_id;}
+		function get_parent_id() {return $this->parent_id;}
+
+		var $created_at;
+		function set_created_at($new_created_at) {$this->created_at = $new_created_at;}
+		function get_created_at() {return $this->created_at;}
+
 	}
 
 ?>

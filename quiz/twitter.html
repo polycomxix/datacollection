@@ -12,10 +12,10 @@
     <title>Data Collection Application</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="../css/bootstrap.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="css/one-page-wonder.css" rel="stylesheet">
+    <link href="../css/one-page-wonder.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -49,7 +49,7 @@
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <a class="navbar-brand" href="./index.html">Data Collection Application</a>
+                <a class="navbar-brand" href="../index.html">Data Collection Application</a>
             </div>
             <!-- /.navbar-collapse -->
         </div>
@@ -64,9 +64,9 @@
                     <!-- Jumbotron Header -->
                     <div class="">
                         <h1>Twitter Results</h1>
-                        <div class="loading text-center result-container">
-                            <img src="./images/ajax-loader.gif">
-                        </div>
+                        <!--<div class="loading text-center result-container">
+                            <img src="../images/ajax-loader.gif">
+                        </div>-->
                         <div class="twitter-result result-container">
                             <div class="row">
                                 <div class="col-sm-4">
@@ -181,22 +181,22 @@
     </div>
     <!-- /.container -->
     <!-- jQuery -->
-    <script src="js/jquery.js"></script>
+    <script src="../js/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
 
 </body>
 
 </html>
 <script type="text/javascript">
     $(document).ready(function(){
-        $(".twitter-result").hide();
-        $.get("./twitter/get_tweet_data.php", function (data) {
+        //$(".twitter-result").hide();
+        /*$.get("./twitter/get_tweet_data.php", function (data) {
             console.log(data);
-            console.log(data['name']);
+            console.log(data['user_id']);
             $(".loading").hide();
             $(".twitter-result").show();
-        },'json');
+        },'json');*/
     });
 </script>
