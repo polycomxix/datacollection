@@ -119,7 +119,7 @@ body {
 
 .result-container{
   background-color: white;
-  padding:40px 20px;
+  padding:20px;
 }
 .survey .section-b .activity-detail{
   margin-bottom: 20px;
@@ -251,6 +251,51 @@ form .sub-q li{}
   display: none;
 }
 
+
+/*Quiz page*/
+.quiz-processing{display: none;}
+.quiz-processing-msg{
+  font-size:16px;
+  margin-top: -10px;
+}
+.btn-connect-twitter{
+  width: 100%;
+  padding:10px 0;
+}
+.btn-twitter
+{
+  
+  color:#ffffff;
+  background-color: #55acee;
+  border:none;
+  
+}
+.btn-twitter:hover
+{
+  color:#ffffff;
+  background-color: #55acee;
+  opacity: 0.8;
+  border:none;
+}
+.btn-fb
+{
+  color:white;
+  background-color: #3b5998;
+  border: none;
+}
+.btn-fb:hover
+{
+  color:white;
+  background-color: #3b5998;
+  opacity: 0.8;
+  border: none;
+}
+.share-button button{
+  display: inline-block;
+  width:49%;
+  margin:10px 0;
+  min-height: 34px;
+}
 /*Thanks page*/
 .container .jumbotron, .container-fluid .jumbotron{
   padding-left: 15px;
@@ -260,6 +305,8 @@ form .sub-q li{}
   display: inline-block;
   vertical-align: top;
 }
+
+
 
 
 footer {
@@ -411,6 +458,11 @@ footer {
     form .likert li label {font-size: 12px; width:auto;}
 
     .input-sm{width: 50%;}
+
+    .share-button button{
+      display: block;
+      width:100%;
+    }
 }
 
 @media(max-width:375px) {

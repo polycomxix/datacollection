@@ -59,112 +59,71 @@
     <!-- Page Content -->
     <div class="section-container">
         <div class="container">
-            <!-- Title -->
-
-                    <!-- Jumbotron Header -->
-                    <div class="">
-                        <h1>Twitter Results</h1>
-                        <!--<div class="loading text-center result-container">
-                            <img src="../images/ajax-loader.gif">
-                        </div>-->
-                        <div class="twitter-result result-container">
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <div class="thumbnail"></div>
-                                </div>
-                                <div class="col-sm-8">
-                                    <div>@screenname Twitter fan: 3 years 4 months</div>
-                                    <div class="row">
-                                        <div class="col-sm-3">
-                                            <div>3,763</div>
-                                            <div>Tweets</div>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <div>255</div>
-                                            <div>Following</div>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <div>150</div>
-                                            <div>Follower</div>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <div>150</div>
-                                            <div>Like</div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <h3>Retweet of Me</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="button-group">
-                                <a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=Hello%20world"data-size="large">Share on Twitter</a>
-                            </div>
-                        </div>
-                    </div>
-        </div>
-    </div>
-    <!-- /.container -->
-    <!-- Page Content -->
-    <div id="quiz" class="section-container">
-        <div class="container">
-            <!-- Title -->
             <div class="row">
-                <div class="col-lg-12">
-                    <h2>Recommended Quizzes</h2>
+                <div class="col-md-8 col-sm-12">
+                    <div class="twitter-result result-container">
+                        <h2><strong>How often do you tweet?</strong></h2>
+                        <div class="quiz-processing text-center">
+                            <img src="../images/ellipsis.gif" alt=""/>
+                            <div class="quiz-processing-msg">connecting to account</div>
+                        </div>
+                        
+                        <div class="thumbnail">
+                            <img src="http://placehold.it/800x500" alt=""/>
+                        </div>
+                        <div class="connect-button text-center">
+                            <button type="button"class="btn btn-primary btn-twitter btn-connect-twitter">
+                                <img src="../images/twitter_logo_white.png" alt="" width="20"/>
+                                Connect with Twitter
+                            </button>
+                        </div>
+                        <div class="share-button text-center">
+
+                            <button type="button"class="btn btn-primary btn-fb"> 
+                                <img src="../images/fb_logo_white.png" alt="" width="20"/>
+                                Share on Facebook
+                            </button>
+                            <button type="button"class="btn btn-primary btn-twitter">
+                                <img src="../images/twitter_logo_white.png" alt="" width="20"/>
+                                Tweet on Twitter
+                            </button>
+                        </div>
+                    </div>  
+                </div>
+                <div class="col-md-4 col-sm-12" >
+                    <h3>Recommended Quizzes</h3>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-6">
+                            <div class="thumbnail text-center">
+                                <img src="http://placehold.it/800x500" alt="">
+                                <div class="caption">
+                                    <h3>SNS Usage Questionnaire</h3>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                                    <p>
+                                        <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="1">Start</button> 
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-6">
+                            <div class="thumbnail text-center">
+                                <img src="http://placehold.it/800x500" alt="">
+                                <div class="caption">
+                                    <h3>Facebook Quiz</h3>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                                    <p>
+                                        <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="2">Start</button> 
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- /.row -->
-
-            <!-- Page Features -->
-            <div class="row text-center">
-
-                <div class="col-md-4 col-sm-6 hero-feature">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/800x500" alt="">
-                        <div class="caption">
-                            <h3>SNS Usage Questionnaire</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                            <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="1">Start</button> 
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-sm-6 hero-feature">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/800x500" alt="">
-                        <div class="caption">
-                            <h3>Facebook Quiz</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                            <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="2">Start</button> 
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-sm-6 hero-feature">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/800x500" alt="">
-                        <div class="caption">
-                            <h3>Twitter Quiz</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                            <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="3">Start</button>  
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.row -->
-
         </div>
     </div>
     <!-- /.container -->
+    
     <!-- Footer -->
     <div class="section-container section-container-footer">
         <div class="container">
