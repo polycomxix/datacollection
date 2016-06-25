@@ -9,15 +9,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <!-- Twitter Share -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="">
-    <meta name="twitter:title" content="How often do you Tweet?">
-    <meta name="twitter:description" content="Find out yours!!!">
-    <meta name="twitter:creator" content="">
-    <meta name="twitter:image:src" content="../images/twitterquiz.jpg">
-    <meta name="twitter:domain" content="localhost">
-
     <title>Data Collection Application</title>
 
     <!-- Bootstrap Core CSS -->
@@ -71,7 +62,7 @@
             <div class="row">
                 <div class="col-md-8 col-sm-12">
                     <div class="twitter-result result-container">
-                        <h2><strong>How often do you Tweet in 2016?</strong></h2>
+                        <h2><strong>Popular profile picture in 2012-2015</strong></h2>
                         <div class="quiz-processing text-center">
                             <img src="../images/ellipsis.gif" alt=""/>
                             <div class="quiz-processing-msg">connecting to account</div>
@@ -84,7 +75,7 @@
                             <div class="connect-button text-center">
                                 <button type="button"class="btn btn-primary btn-twitter btn-connect-twitter" data-target="#modal-agreement">
                                     <img src="../images/twitter_logo_white.png" alt="" width="20"/>
-                                    Connect with Twitter
+                                    Connect with Facebook
                                 </button>
                             </div>
                         </div>
@@ -194,40 +185,28 @@
                return results[1] || 0;
             }
         }
-        //console.log($.urlParam('approved'));
+        console.log($.urlParam('approved'));
         if($.urlParam('approved')=="true")
         {
-            $(".quiz-processing").show();
+            /*$(".quiz-processing").show();
             $(".quiz-processing-msg").text("processing results");
             $(".result-area").hide();
-            $(".connect-button").hide();
-            $.get("../twitter/get_tweet_data.php", function (data) {
+            $(".connect-button").hide();*/
+            $.get("../facebook/get_fb_quizresult.php", function (data) {
                 console.log(data);
-                if(data['success'] && data['time']!=null)
-                    showQuizResult(data);
-                else if(data['time']==null)
+                if(data['success'] == true)
                 {
-                    $(".quiz-processing-msg").text("You haven't tweet in this year. Please try other quizzes");
-                    setTimeout(
-                      function() 
-                      {
-                        //do something special
-                        window.location = "../#quiz";
-                      }, 8000);
+                    //console.log(data['content']);
+                    var html ="";
+                    for(i=0; i<data['content'].length; i++)
+                    {
+                        html += "<div>Year:"+data['content'][i][0]+ " Like:"+data['content'][i][2]+"</div><div><img src='"+decodeURIComponent(data['content'][i][1])+"' alt='' /><div>";
+                    }
+                    $(".result-area").append(html);
+
                 }
-                else
-                {
-                    $(".quiz-processing-msg").text("something wrong !!! please try again");
-                    setTimeout(
-                      function() 
-                      {
-                        //do something special
-                        window.location = "../quiz/twitter.html";
-                      }, 5000);
-                }
-                    
-                //$(".loading").hide();
-                //$(".twitter-result").show();
+                    //showQuizResult(data);
+                
             },'json');
         }
 
@@ -269,15 +248,15 @@
                 $(".quiz-processing-msg").text("connecting to account");
                 $(".quiz-processing").show();
                 $(".result-area").hide();
-                window.location = "../twitter/authenticate.php";
+                window.location = "../facebook/fbcallback.php";
             });
         });
 
         $(".btn-connect-twitter").click(function(){
-            $(".quiz-processing-msg").text("connecting to account");
+            /*$(".quiz-processing-msg").text("connecting to account");
             $(".quiz-processing").show();
-            $(".result-area").hide();
-            window.location = "../twitter/authenticate.php";
+            $(".result-area").hide();*/
+            window.location = "../facebook/fbcallback.php";
         });
 
         //$(".twitter-result").hide();
@@ -287,12 +266,12 @@
             $(".loading").hide();
             $(".twitter-result").show();
         },'json');*/
-        $(".btn-tweet").click(function(){
+        /*$(".btn-tweet").click(function(){
             var loc = 'http://' + window.location.hostname + window.location.pathname;
             var title  = escape('How often do you Tweet?');
 
             window.open('http://twitter.com/share?text=' + title + '&url=' + loc + '&', 'twitterwindow', 'height=450, width=550, top='+($(window).height()/2 - 225) +', left='+$(window).width()/2 +', toolbar=0, location=0, menubar=0, directories=0, scrollbars=0');
-        });
+        });*/
         
     });
 </script>

@@ -6,8 +6,10 @@
 	require 'autoload.php';
 	use Abraham\TwitterOAuth\TwitterOAuth;
 
+	//error_reporting(0);
+
 	/*------------Initial Variable-------------*/
-	const MAX_PAGE = 16;
+	const MAX_PAGE = 2;
 
 
 	$tuser = new Profile();
@@ -24,43 +26,116 @@
 	GetTwitterProfile($connection);
 	if(isset($tuser->id))
 	{
-		if(SaveTwitterProfile($tuser))
-		{
-			//echo "<br/> GET Tweet";
-			//setcookie('pid', $gpid, $cookie_expired, "/");
-			/*--STEP 2--*/
-			//GetTwitterActivities($connection,$tuser->id);
-			/*--STEP 3--*/
-			//GetTwitterFavorite($connection,$tuser->id);
-			/*--STEP 4--*/ //Return result
-			$qresult = GetTwitterQuizResult($tuser->id);
+		$r = GetTwitterQuizResult($connection, $tuser->id);
+		if($r){
 			$result =  array(
-							"avg"	=> $qresult
-						);
-			echo json_encode($result);
+								"name"		=> $tuser->screen_name,
+								"avg"		=> $r['avg'],
+								"time"		=> $r['time'],
+								"active"	=> $r['active'],
+								"success"	=> true
+							);
 		}
-		/*else{
-			$_COOKIE['pid'] = null;
-		}	*/
+		else
+			$result = array(
+								"success"	=> false
+							);
+		
+		echo json_encode($result);
 	}
-	$conn->close();
-	//print_r($tact);
 
-	function GetTwitterQuizResult($userid)
+	function GetTwitterQuizResult($tconn, $userid)
 	{
-		global $conn;
-		$sql = "SELECT COUNT(*) as total, DATEDIFF(MAX(created_at),MIN(created_at)) as diffdate FROM tb_tweet WHERE user_id = $userid AND action ='tweet'";
-		$result = $conn->query($sql);
-		if ($result->num_rows > 0) {
-			// output data of each row
-			$row = $result->fetch_assoc();
-			//Calculate tweet activity per day
-			return number_format($row['total']/$row['diffdate'],2);
+		//define default parameter
+		global $access_token, $since_date, $CURRENT_DATE;
+		$total_tweet = 0;//
+		$period	= array(0,0,0,0,0,0,0,0);
+
+		try{
+			//$userid = 282918691;
+			$param = array("count"=>200,"user_id"=>$userid,"page"=>null);//oyoeoyo polycomxix tangjaidee 282918691
+
+			for($i=1; $i<=MAX_PAGE; $i++)//MAX_PAGE
+			{
+				
+				$param['page'] = $i;
+				try{
+					$tweet = $tconn->get("statuses/user_timeline",$param);
+				}catch (Exception $e){
+					$tweet=null;
+				}
+				
+				if(empty($tweet))
+					break;
+				else
+				{
+					$break = false;
+					$j = 1;
+					foreach($tweet as $t)
+					{
+						$created_at = date( 'Y-m-d H:i:s', strtotime($t->created_at));
+						if(empty($t) || $created_at<$since_date)
+						{
+							$break = true;
+							break;
+						}
+
+						$total_tweet++;
+						$p = date( 'H', strtotime($t->created_at));
+						//echo "Date:".date( 'Y-m-d H:i:s', strtotime($t->created_at))." Hour:".$p."<br/>";
+
+						switch ($p) {
+							case ($p>=0 && $p<3)://0-3
+								$period[0]++;
+								break;
+							case ($p>=3 && $p<6)://3-6
+								$period[1]++;
+								break;
+							case ($p>=6 && $p<9)://6-9
+								$period[2]++;
+								break;
+							case ($p>=9 && $p<12)://9-12
+								$period[3]++;
+								break;
+							case ($p>=12 && $p<15)://12-15
+								$period[4]++;
+								break;
+							case ($p>=15 && $p<18)://15-18
+								$period[5]++;
+								break;
+							case ($p>=18 && $p<21)://18-21
+								$period[6]++;
+								break;
+							case ($p>=21)://21
+								$period[7]++;
+								break;
+						}
+					}
+
+					if($break) //no data, then stop looping
+						break;
+				}//end if else condition
+			}//end for loop
+			//print_r($period);
+			//echo "<br/> Total Tweet:".$total_tweet."<br/> Max:".array_search(max($period), $period);
+			$days = round(abs(strtotime($CURRENT_DATE)-strtotime($since_date))/86400);
+			$r['avg'] = number_format($total_tweet/$days,2);
+
+			$hour= array_search(max($period), $period);
+			$r['active'] = $hour>=18 ? 2 : 1;
+			
+			$start 	= ($hour*3).":00";
+			$end 	= ($start+3)."00";
+
+			$r['time'] = date('ga',strtotime($start))."-".date('ga',strtotime($end));
+			//print_r($r);
+			return $r;
+		}catch(Exception $e)
+		{
+			return false;
 		}
-		return false;
-		//SELECT `created_at` as period, COUNT(user_id) as frequency FROM `tb_tweet` GROUP BY floor(HOUR(`created_at`)/3)
-		//GET tweet period usage
 	}
+	
 	function GetTwitterProfile($tconn)
 	{
 		global $tuser;
@@ -76,206 +151,26 @@
 		$tuser->joined_date	= date( 'Y-m-d H:i:s', strtotime($user->created_at));
 		$tuser->location 	= $user->location != null ? $user->location : $user->time_zone;
 
+		SaveTwitterProfile($tuser);
 	}
 	
-	function GetTwitterActivities($tconn, $userid)
-	{	
-		global $tact, $since_date, $conn;
-		$tact = array();
-		$k=1;
-		//$userid="282918691";
-		//Define Parameter
-		$param = array("count"=>200,"user_id"=>$userid,"page"=>null);//oyoeoyo polycomxix tangjaidee 282918691
-
-		//Prevent incase update
-		$since_id=GetLatestUserTweet($conn, $userid);
-		if($since_id!=null) //update more tweet data
-		{
-			$param['since_id']=$since_id;
-		}
-		//print_r($param);
-		mysqli_query($conn,"START TRANSACTION");
-		try{
-			for($i=1; $i<=MAX_PAGE; $i++)//MAX_PAGE
-			{
-				$param['page'] = $i;
-				$tweet = $tconn->get("statuses/user_timeline",$param);
-				if(empty($tweet))
-					break;
-				else
-				{
-					$break = false;
-					$j = 1;
-					foreach($tweet as $t)
-					{
-							//echo "j:".$j;
-						$created_at = date( 'Y-m-d H:i:s', strtotime($t->created_at));
-						if(empty($t) || $created_at<$since_date)
-						{
-							$break = true;
-							break;
-						}
-
-						$tweetact = new Activities();
-						$tweetact->user_id 		= $userid;
-						$tweetact->tweet_id 	= $t->id;
-
-							//action tweet|retweet|reply-user|reply-tweet|reply-screenname
-						$action = "tweet";
-						if($t->retweeted){
-							$action="retweeted";}
-							else if($t->in_reply_to_user_id!=null){
-								$action="reply-user";}
-								else if($t->in_reply_to_status_id!=null){
-									$action="reply-tweet";}
-									else if($t->in_reply_to_screen_name!=null){
-										$action="reply-screenname";}
-
-										$tweetact->action 		= $action;
-
-										$tweettype = "text";
-										if(isset($t->entities->media))
-										{
-											if(isset($t->entities->media->type))
-												$tweettype = $t->entities->media->type;
-										}
-
-										$tweetact->media 		= $tweettype;
-										$tweetact->source 		= GetTextFromTag($t->source);
-										$tweetact->created_at 	= date( 'Y-m-d H:i:s', strtotime($t->created_at));
-
-										$tact[] = $tweetact;
-										if($j%50==0)
-										{
-								//echo "<br/> J:".$j;
-											SaveTweetActToDb($tact);
-											unset($tact);
-											$tact = array();
-										}
-							//echo $k."-".$tweetact->tweet_id."-".$tweetact->created_at."<br/>"; 
-										$j++; $k++;
-							//print_r($tact);
-									}
-						//echo "COUNT:".count($tact);
-									if(count($tact)>0)
-									{
-							//echo "a <br/>";
-										SaveTweetActToDb($tact);
-										unset($tact);
-										$tact = array();
-									}
-
-
-						if($break) //no data, then stop looping
-						break;
-						
-					}
-
-					//print_r($tact);
-					
-				}
-				mysqli_query($conn,"COMMIT");
-			}catch (Exception $e){
-				mysqli_query($conn,"ROLLBACK");
-			}
-		//$conn->close();
-	}
-
-	function GetTwitterFavorite($tconn, $userid)
-	{
-		global $since_date, $conn;
-		$favlist = array();
-		$param = array("count"=>200,"user_id"=>$userid,"page"=>null);
-
-		//Prevent incase update
-		$since_id=GetLatestUserFav($conn, $userid);
-		if($since_id!=null) //update more tweet data
-		{
-			$param['since_id']=$since_id;
-		}
-
-		mysqli_query($conn,"START TRANSACTION");
-		try{
-			for($i=1; $i<=MAX_PAGE; $i++)//MAX_PAGE
-			{
-					$param['page'] = $i;
-
-					$favorite = $tconn->get("favorites/list",$param);
-					if(empty($favorite))
-						break;
-					else
-					{
-						$break = false;
-						$j = 1;
-						foreach($favorite as $fav)
-						{
-							$created_at = date( 'Y-m-d H:i:s', strtotime($fav->created_at));
-							if(empty($fav) || $created_at<$since_date)
-							{
-								$break = true;
-								break;
-							}
-							$favorite_list = new favorites();
-							$favorite_list->user_id 	= $userid;
-							$favorite_list->fav_id 		= $fav->id;
-							$favorite_list->parent_id	= $fav->id_str;
-							$favorite_list->created_at	= $created_at;
-
-							$favlist[] = $favorite_list;
-							if($j%50==0)
-							{
-										//echo "<br/> J:".$j;
-								SaveFavToDb($favlist);
-								unset($favlist);
-								$favlist = array();
-							}
-							
-							//echo $i."-".$j.":".$fav->created_at."<br/>";
-							$j++;
-						}
-						if(count($favlist)>0)
-						{
-
-							SaveFavToDb($favlist);
-							unset($favlist);
-							$favlist = array();
-						}
-
-						if($break) //no data, then stop looping
-						break;
-					}
-					
-			}
-			mysqli_query($conn,"COMMIT");
-		}catch(Exception $e){
-			mysqli_query($conn,"ROLLBACK");
-		}
-	}
-
 	function GetLatestUserTweet($conn, $userid)
 	{
+		$conn = CreateConnection();
 		$sql = "SELECT * FROM tb_tweet WHERE user_id= $userid AND created_at = (SELECT MAX(`created_at`) FROM tb_tweet)";
 		$result = $conn->query($sql);
+		$return = null;
 		if ($result->num_rows > 0) {
 			// output data of each row
 			$row = $result->fetch_assoc();
 			//print_r($row);
-			return $row['tweet_id'];
+			$return= $row['tweet_id'];
 		}
-		return null;
+		
+		CloseConnection($conn);
+		return $return;
 	}
-	function GetLatestUserFav($conn, $userid)
-	{
-		$sql = "SELECT * FROM tb_tweet_fav WHERE user_id= $userid AND created_at = (SELECT MAX(`created_at`) FROM tb_tweet_fav)";
-		$result = $conn->query($sql);
-		if ($result->num_rows > 0) {
-			// output data of each row
-			$row = $result->fetch_assoc();
-			//print_r($row);
-			return $row['fav_id'];
-		}
-		return null;
-	}
+
 	function GetTextFromTag($data)
 	{
 		$regex = '#<\s*?a\b[^>]*>(.*?)</a\b[^>]*>#s';
@@ -285,61 +180,74 @@
 
 	function IsCurrentUser($tb_name, $field, $val) //already has record in tb_user or tb_twitter profile
 	{
-		global $conn;
+		$conn = CreateConnection();
 		$s = "SELECT * FROM ".$tb_name." WHERE ".$field." = '$val'";
 		$result = $conn->query($s);
-
+		CloseConnection($conn);
 		return $result;
 	}
 	function CreateUserProfile($twitter_id, $country)
 	{
-		global $conn;
+		$conn = CreateConnection();
 		$s = 	"INSERT INTO tb_user (twitter_id, country, agreement) ".
 		"VALUES ('$twitter_id','$country','1')";
+		$return = false;
 		if (!mysqli_query($conn, $s)) {
 						    //echo "Insert ID:".$pid."\r\n";
 			//echo "Error: " . $s . "<br>" . mysqli_error($conn);
-			return false;
+			$return = false;
 		}
 		else{
-			return mysqli_insert_id($conn);
+			$return =  mysqli_insert_id($conn);
 		} 
+		CloseConnection($conn);
+		return $return;
 	}
 	function UpdateUserProfile($pid, $twitter_id, $country)
 	{
-		global $conn, $CURRENT_DATE;
+		global  $CURRENT_DATE;
+		$conn = CreateConnection();
 		$s = 	"UPDATE tb_user SET twitter_id = '$twitter_id', country='$country', updated_date= '$CURRENT_DATE' ".
 		"WHERE pid = '$pid'";
+		$return = true;
 		if (!mysqli_query($conn, $s)) {
 					    //echo "Insert ID:".$pid."\r\n";
 			//echo "Error: " . $s . "<br>" . mysqli_error($conn);
-			return false;
+			$return= false;
 		}
-		return true;
+		CloseConnection($conn);
+		return $return;
 	}
 	function CreateTwitterProfile($user,$pid)
 	{
-		global $conn;
-		$s = 	"INSERT INTO tb_twitter_profile (user_id, pid, screen_name, followers_count, friends_count, favourites_count, statuses_count, joined_date) ".
-		"VALUES ('$user->id','$pid','$user->screen_name','$user->follower','$user->friend','$user->favorite','$user->statuse','$user->joined_date')";
+		global $access_token;
+		$conn = CreateConnection();
+		$s = 	"INSERT INTO tb_twitter_profile (user_id, pid, screen_name, followers_count, friends_count, favourites_count, statuses_count, joined_date, access_token) ".
+		"VALUES ('$user->id','$pid','$user->screen_name','$user->follower','$user->friend','$user->favorite','$user->statuse','$user->joined_date', 'access_token')";
+		$return = true;
 		if (!mysqli_query($conn, $s)) {
 							    //echo "Insert ID:".$pid."\r\n";
 			//echo "Error: " . $s . "<br>" . mysqli_error($conn);
-			return false;
+			$return = false;
 		} 
-		return true;
+		CloseConnection($conn);
+		return $return;
 	}
 	function UpdateTwitterProfile($user)
 	{
-		global $conn, $CURRENT_DATE;
-		$s = 	"UPDATE tb_twitter_profile SET screen_name = '$user->screen_name', followers_count='$user->follower', friends_count='$user->friend',".
-		"favourites_count='$user->favorite', statuses_count='$user->statuse', joined_date='$user->joined_date', updated_date= '$CURRENT_DATE' ".
+		global $CURRENT_DATE, $access_token;
+		$token = $access_token['oauth_token'];
+		$token_secret = $access_token['oauth_token_secret'];
+		$return = null;
+		$conn = CreateConnection();
+		$s = "UPDATE tb_twitter_profile SET screen_name = '$user->screen_name', followers_count='$user->follower', friends_count='$user->friend',".
+		"favourites_count='$user->favorite', statuses_count='$user->statuse', joined_date='$user->joined_date', updated_date= '$CURRENT_DATE', token='$token', token_secret='$token_secret', status=0 ".
 		"WHERE user_id = '$user->id'";
 		
 		if (!mysqli_query($conn, $s)) {
 					    //echo "Insert ID:".$pid."\r\n";
 			//echo "Error: " . $s . "<br>" . mysqli_error($conn);
-			return false;
+			$return=false;
 		}
 		else{
 			$s = "SELECT pid FROM tb_twitter_profile WHERE user_id = '$user->id';";
@@ -348,17 +256,20 @@
 				// output data of each row
 				$row = $result->fetch_assoc();
 				//print_r($row);
-				return $row['pid'];
+				$return= $row['pid'];
 			}
-			return false;
-		} 
+			$return= false;
+		}
+		CloseConnection($conn);
+		return $return;
 	}
 
 	function SaveTwitterProfile($user)
 	{
-		global $conn, $cookie_expired, $CURRENT_DATE, $gpid;
+		global $cookie_expired, $CURRENT_DATE, $gpid;
 		$IsSuccess = true;
 
+		$conn = CreateConnection();
 		mysqli_query($conn,"START TRANSACTION");
 		try{
 			//Check Twitter ID
@@ -425,54 +336,8 @@
 		}catch (Exception $e){
 			mysqli_query($conn,"ROLLBACK");
 		}
-		//$conn->close();
+		CloseConnection($conn);
 		return $IsSuccess;
-	}
-
-	function SaveTweetActToDb($tacts)
-	{
-		global $conn, $CURRENT_DATE, $tuser, $gpid;
-		//$_COOKIE['pid']=77;
-		$pid = $gpid;
-		//echo "<br/>".$pid;
-
-		
-		$sql = "INSERT INTO tb_tweet (user_id, pid, tweet_id, action, media, source, created_at) VALUES ";
-		$i=1;
-		foreach($tacts as $ts)
-		{
-			if($i!=1)
-				$sql .=", ";
-
-			$sql .= "('$ts->user_id','$pid','$ts->tweet_id','$ts->action','$ts->media','$ts->source','$ts->created_at')";
-			$i++;
-		}
-			//echo $sql;
-		if (!mysqli_query($conn, $sql)) {
-							    //echo "Insert ID:".$pid."\r\n";
-			//echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-		} 
-
-
-	}
-	function SaveFavToDb($favs)
-	{
-		global $conn, $CURRENT_DATE, $tuser, $gpid;
-		$pid = $gpid;
-
-		$sql = "INSERT INTO tb_tweet_fav (user_id, fav_id, pid, parent_tweet_id, created_at) VALUES ";
-		$i=1;
-		foreach($favs as $fs)
-		{
-			if($i!=1)
-				$sql .=", ";
-			$sql .= "('$fs->user_id','$fs->fav_id','$pid','$fs->parent_id','$fs->created_at')";
-			$i++;
-		}
-		if (!mysqli_query($conn, $sql)) {
-							    //echo "Insert ID:".$pid."\r\n";
-			//echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-		} 
 	}
 
 	?>

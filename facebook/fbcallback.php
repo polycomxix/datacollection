@@ -17,7 +17,9 @@
 
 	if (isset($accessToken)) {
 		$_SESSION['access_token'] = (string) $accessToken;
-		header('Location: ../facebook/get_fb_data.php'); 
+		header('Location: ../quiz/facebook.html?approved=true'); 
+		//header('Location: ../facebook/get_fb_quizresult.php'); 
+		//header('Location: ../facebook/service_get_fb_data.php'); 
   		// Logged in!
 	  	/*$response = $fb->get('/me?fields=id,name', $accessToken);
 	  	$user = $response->getGraphUser();

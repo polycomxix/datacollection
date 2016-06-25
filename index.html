@@ -33,22 +33,25 @@
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <!--<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button>-->
-                <a class="navbar-brand" href="./index.html">Data Collection Application</a>
+                </button>
+                <a class="navbar-brand" href="./index.html">SNS Research</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#about">Who are we</a>
+                        <a href="#overview">Research Overview</a>
                     </li>
                     <li>
-                        <a href="#quiz">Quizzes</a>
+                        <a href="#quiz">Questionnaire & Quizzes</a>
+                    </li>
+                    <li>
+                        <a href="#about">About Us</a>
                     </li>
                     <li>
                         <a href="#contact">Contact us</a>
@@ -64,22 +67,25 @@
     <header class="header-image">
         <div class="headline">
             <div class="container">
-                <h1>Sample Content</h1>
-                <h2>Sample content</h2>
+                <!--<h1>Sample Content</h1>-->
+                <h2>We study SNS usage behavior</h2>
+                <h3>We will ask for your help to cooperate in our research.</h3>
             </div>
+            <br/>
+            <button type="button" class="btn btn-info">Participate</button>
         </div>
     </header>
-
-    <!-- Who are we -->
-    <div id="about" class="section-container">
+    <!-- Research Overview -->
+    <div id="overview" class="section-container">
         <div class="container">
             <!-- Title -->
             <div class="row">
                 <div class="col-lg-12">
                     <!-- Jumbotron Header -->
-                    <header class="jumbotron hero-spacer">
-                        <h1>A Warm Welcome!</h1>
-                        <p>This research aims to study Social Networking Sites (SNSs) usage. We will ask for you help to complete the questionnaire and quizzes. Your information will be kept strictly confidential.</p>
+                    <header class="jumbotron"> <!--hero-spacer-->
+                        <h2>Research Overview</h2>
+                        <p>Social networking sites (SNSs) have become a popular type of communication where groups of people virtually meet and interact with other people with similar interests. The use of SNS continues to dramatically increase when compare to the past. People spend so much time online. To understand how people interact with SNSs, collecting data is an important first step for analyzing usage behavior of SNSs.</p>
+                        <p>We will ask for your help to cooperate in our research. Your information will be kept strictly confidential.</p>
                         <!--<p><a class="btn btn-primary btn-large">Call to action!</a>
                         </p>-->
                     </header>
@@ -89,13 +95,14 @@
         </div>
     </div>
     <!-- /.container -->
+    
     <!-- Page Content -->
     <div id="quiz" class="section-container">
         <div class="container">
             <!-- Title -->
             <div class="row">
                 <div class="col-lg-12">
-                    <h2>Latest Quizzes</h2>
+                    <h2>Questionnaire & Quizzes</h2>
                 </div>
             </div>
             <!-- /.row -->
@@ -105,45 +112,60 @@
 
                 <div class="col-md-4 col-sm-6 hero-feature">
                     <div class="thumbnail">
-                        <img src="http://placehold.it/800x500" alt="">
+                        <img src="http://placehold.it/350x184" alt="">
                         <div class="caption">
                             <h3>SNS Usage Questionnaire</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                            <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="1">Let's start!</button> 
-                            </p>
+                            <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
+                            <button type="button"class="btn btn-info" data-toggle="modal" data-target="#modal-agreement" data-btnid="1">Let's start</button> 
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4 col-sm-6 hero-feature">
                     <div class="thumbnail">
-                        <img src="http://placehold.it/800x500" alt="">
+                        <img src="http://placehold.it/350x184" alt="">
                         <div class="caption">
                             <h3>Facebook Quiz</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                            <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="2">Let's start!</button> 
-                            </p>
+                            <button type="button"class="btn btn-info" data-toggle="modal" data-target="#modal-agreement" data-btnid="2">Let's start</button> 
+                            
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4 col-sm-6 hero-feature">
                     <div class="thumbnail">
-                        <img src="http://placehold.it/800x500" alt="">
+                        <img src="./images/twitterquiz.jpg" alt="">
                         <div class="caption">
-                            <h3>Twitter Quiz</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                            <p>
-                                <button type="button"class="btn btn-primary" data-toggle="modal" data-target="#modal-agreement" data-btnid="3">Let's start!</button>  
-                            </p>
+                            <h3>How often do you Tweet in 2016?</h3>
+                            <button type="button"class="btn btn-info"  onclick="javascript:window.location.href = './quiz/twitter.html'">Let's start</button>  
+                            
                         </div>
                     </div>
                 </div>
             </div>
             <!-- /.row -->
 
+        </div>
+    </div>
+    <!-- /.container -->
+    <!-- Who are we -->
+    <div id="about" class="section-container">
+        <div class="container">
+            <!-- Title -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Jumbotron Header -->
+                    <header class="jumbotron"> <!--hero-spacer-->
+                        <h2>About Us</h2>
+                        <div class="clearfix" >
+                            <img class="img-circle pull-left" style="margin-right:20px;" src="./images/experimenter.jpg" width="100" alt="">
+                        <p>This website is under supervision of Information System Engineering laboratory (Ohkura Lab), Shibaura Institute of Technology (SIT). Ploypailin Intapong is an experimenter of this research. She is a doctoral student of Graduate School of Engineering and Science, SIT. The research is supervised by Professor Michiko Ohkura, College of Engineering, SIT.</p>
+                        <!--<p><a class="btn btn-primary btn-large">Call to action!</a>
+                        </p>-->
+                    </header>
+                </div>
+            </div>
+            <!-- /.row -->
         </div>
     </div>
     <!-- /.container -->
@@ -172,8 +194,11 @@
             <footer>
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="text-center">    
-                        <p>Copyright &copy; 2016 Ohkura Lab All Rights Reserved.</p>
+                        <div class="site-info">
+                            <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> 
+                        </div>
+                        <div class="text-left">   
+                            Copyright &copy; 2016 Ohkura Lab All Rights Reserved.
                         </div>
                     </div>
                 </div>
