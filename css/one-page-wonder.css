@@ -299,9 +299,12 @@ form .sub-q li{}
   font-size:16px;
   margin-top: -10px;
 }
-.btn-connect-twitter{
+.btn-connect-twitter,
+.btn-connect-fb,
+.btn-connect-ig{
   width: 100%;
   padding:10px 0;
+  cursor: pointer;
 }
 .btn-twitter
 {
@@ -331,6 +334,30 @@ form .sub-q li{}
   opacity: 0.8;
   border: none;
 }
+.btn-ig
+{
+  color:white;
+  background-color: #ff2d7b;
+  border: none;
+}
+.btn-ig:hover,
+.btn-ig:focus
+{
+  color:white;
+  background-color: #ff2d7b;
+  opacity: 0.8;
+  border: none;
+  cursor: pointer;
+}
+.btn-ig:active,
+.btn-ig.active
+{
+  color:white;
+  background-color: #ff2d7b;
+  opacity: 1;
+  border: none;
+  cursor: pointer;
+}
 .share-button button{
   display: inline-block;
   width:49%;
@@ -356,7 +383,7 @@ form .sub-q li{}
 }
 
 
-
+#bg-panel li{list-style: none; display: inline-block; width: 30%;}
 
 footer {
     

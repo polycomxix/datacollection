@@ -32,7 +32,6 @@
 												  'basic',
 												  'likes',
 												  'comments',
-												  'public_content',
 												  'relationships'
 												));
 			header('Location: ' . $ig_url);

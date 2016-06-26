@@ -1,9 +1,11 @@
 <?php
-	require_once __DIR__ ."/src/Instagram.php";
+	$root = $_SERVER['DOCUMENT_ROOT']."/app";
+	include_once($root."/instagram/src/Instagram.php");
+
 	use MetzWeb\Instagram\Instagram;
 	define('CLIENT_ID','bec029c9d2c44d329f870d2ba0388754');
 	define('CLIENT_SECRET','00c1ffe4df984940bd7ca7964810c38b');
-	define('CALLBACK','http://localhost:800/datacollection/instagram/callback.php');
+	define('CALLBACK','http://localhost/app/instagram/callback.php');
 
 	$instagram = new Instagram(array(
 		'apiKey' => CLIENT_ID,

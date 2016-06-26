@@ -1,6 +1,6 @@
 <?php 
 	session_start();
-	$root = $_SERVER['DOCUMENT_ROOT']."/datacollection";
+	$root = $_SERVER['DOCUMENT_ROOT']."/app";
 
 	include_once($root."/instagram/config.php");
 	include_once($root."/instagram/ig_class.php");
