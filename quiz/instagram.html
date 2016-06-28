@@ -18,7 +18,7 @@
     <meta name="twitter:image:src" content="../images/twitterquiz.jpg">
     <meta name="twitter:domain" content="localhost">
 
-    <title>Data Collection Application</title>
+    <title>SNS Research - Your Popular IG media in 2016</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../css/bootstrap.css" rel="stylesheet">
@@ -58,7 +58,7 @@
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <a class="navbar-brand" href="../index.html">Data Collection Application</a>
+                <a class="navbar-brand" href="../index.html">SNS Research</a>
             </div>
             <!-- /.navbar-collapse -->
         </div>
@@ -71,26 +71,39 @@
             <div class="row">
                 <div class="col-md-8 col-sm-12">
                     <div class="twitter-result result-container">
-                        <h2><strong>How often do you Tweet in 2016?</strong></h2>
+                        <h2><strong>Your Popular IG media in 2016.</strong></h2>
                         <div class="quiz-processing text-center">
                             <img src="../images/ellipsis.gif" alt=""/>
                             <div class="quiz-processing-msg">connecting to account</div>
                         </div>
                         <div class="result-area">
                             <canvas id="myCanvas" style="position:absolute;"></canvas>
-                            <div id="bg-panel">
+                            <!--<<div id="bg-panel">
                                 <ul>
                                     <li><img src="../images/experimenter.jpg"/></li>
                                     <li><img src="../images/experimenter.jpg"/></li>
                                     <li><img src="../images/experimenter.jpg"/></li>
                                 </ul>
-                            </div>
-                            <div id="bg-img" class="thumbnail">
-                                <img src="../images/igquiz.jpg"  alt=""/>
-                            </div>
-                            <!--<div id="twitter-quiz-result" class="thumbnail">
-                                <img src="../images/igquiz.jpg" alt=""/>
                             </div>-->
+                            <div id="bg-panel" >                                
+                                <ul>
+                                </ul>
+                                <div class="blank-ig">
+                                    <div class="media-tmp">
+                                        <img src="../images/blankig1.png" alt="" />
+                                        <div class="media-result">
+                                            <img src="../images/survey_result.jpg" alt="" width="225" />
+                                        </div>
+                                        <div class="media-content">
+                                            <div class="like-count">3 likes</div>
+                                            <div class="caption">Please read </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="ig-quiz-result" class="thumbnail">
+                                <img src="../images/igquiz.jpg" alt=""/>
+                            </div>
                             <div class="connect-button text-center">
                                 <button type="button"class="btn btn-ig btn-connect-ig">
                                     <img src="../images/ig_logo_white.png" alt="" width="20"/>
@@ -116,21 +129,30 @@
                     <div class="row">
                         <div class="col-md-12 col-sm-6">
                             <div class="thumbnail text-center">
-                                <img src="http://placehold.it/350x184" alt="">
+                                <img src="../images/questionnaire-image.jpg" alt="">
                                 <div class="caption">
                                     <h3>SNS Usage Questionnaire</h3>
                                     <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
-                                    <button type="button"class="btn btn-info" data-toggle="modal" data-target="#modal-agreement" data-btnid="1">Let's start</button> 
+                                    <button type="button"class="btn btn-info" onclick="javascript:window.location.href = '../survey.html'">Let's start</button> 
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-12 col-sm-6">
                             <div class="thumbnail text-center">
-                                <img src="http://placehold.it/350x184" alt="">
+                                <img src="../images/twitterquiz.jpg" alt="">
                                 <div class="caption">
-                                    <h3>Facebook Quiz</h3>
-                                    <button type="button"class="btn btn-info" data-toggle="modal" data-target="#modal-agreement" data-btnid="2">Let's start</button> 
+                                    <h3>How often do you Tweet in 2016?</h3>
+                                    <button type="button"class="btn btn-info"  onclick="javascript:window.location.href = '../quiz/twitter.html'">Let's start</button>  
                                     
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-6">
+                            <div class="thumbnail text-center">
+                                <img src="../images/fbquiz.jpg" alt="">
+                                <div class="caption">
+                                    <h3>Your popular FB profile pictures</h3>
+                                    <button type="button"class="btn btn-info" onclick="javascript:window.location.href = '../quiz/facebook.html'">Let's start</button> 
                                 </div>
                             </div>
                         </div>
@@ -213,19 +235,11 @@
             $(".quiz-processing-msg").text("processing results");
             $(".result-area").hide();
             $(".connect-button").hide();
-            $.get("../twitter/get_tweet_data.php", function (data) {
+            $.get("../Instagram/get_ig_data.php", function (data) {
                 console.log(data);
-                if(data['success'] && data['time']!=null)
-                    showQuizResult(data);
-                else if(data['time']==null)
+                if(data['success'])
                 {
-                    $(".quiz-processing-msg").text("You haven't tweet in this year. Please try other quizzes");
-                    setTimeout(
-                      function() 
-                      {
-                        //do something special
-                        window.location = "../#quiz";
-                      }, 8000);
+                    showQuizResult(data);
                 }
                 else
                 {
@@ -234,7 +248,7 @@
                       function() 
                       {
                         //do something special
-                        window.location = "../quiz/twitter.html";
+                        window.location = "../quiz/instagram.html";
                       }, 5000);
                 }
                     
@@ -242,7 +256,7 @@
                 //$(".twitter-result").show();
             },'json');
         }
-        $(".btn-connect-ig").click(function(){
+        /*$(".btn-connect-ig").click(function(){
             
             html2canvas($("#bg-panel"), {
             onrendered: function(canvas) {
@@ -258,10 +272,38 @@
                 $("#bg-img img").attr("src", imgDataUrl);
 
             }
-        });
-
-        });
+        });*/
         function showQuizResult(data)
+        {
+            $(".quiz-processing").hide();
+            $(".result-area").show();
+            $("#bg-panel").show();
+
+            for(var i=0; i<15; i++)
+            {
+                var t= '<li><img src="'+data["imglist"][i]+'" class="img img-responsive full-width"></li>';
+                $("#bg-panel ul").append(t);
+            }
+            $("#bg-panel .media-result img").attr("src",data["img_url"]);
+            $("#bg-panel .media-content .like-count").text(data["like_count"]+" likes");
+            $("#bg-panel .media-content .caption").text(data["caption"]);
+
+            html2canvas($("#bg-panel"), {
+                logging: true,
+                useCORS: true,
+                onrendered: function(canvas) {
+                    var imgDataUrl = canvas.toDataURL("image/png");
+                    $("#ig-quiz-result img").attr("src", imgDataUrl);
+                    $("#bg-panel").hide();
+
+                }
+            });
+
+            $(".share-button").show();
+        }
+
+
+        function showQuizResultold(data)
         { 
             $(".quiz-processing").hide();
             $(".result-area").show();
@@ -290,24 +332,12 @@
                 $(".share-button").show();
             }
         }
-        $("#modal-agreement").on('shown.bs.modal',function(event){
-            var button = $(event.relatedTarget);
-            $(".btn-agree").click(function(){
-                Cookies.remove('agreement');
-                Cookies.set("agreement","1");
 
-                $(".quiz-processing-msg").text("connecting to account");
-                $(".quiz-processing").show();
-                $(".result-area").hide();
-                window.location = "../twitter/authenticate.php";
-            });
-        });
-
-        $(".btn-connect-twitter").click(function(){
+        $(".btn-connect-ig").click(function(){
             $(".quiz-processing-msg").text("connecting to account");
             $(".quiz-processing").show();
             $(".result-area").hide();
-            window.location = "../twitter/authenticate.php";
+            window.location = "../instagram/callback.php";
         });
 
         //$(".twitter-result").hide();

@@ -327,13 +327,23 @@ form .sub-q li{}
   background-color: #3b5998;
   border: none;
 }
-.btn-fb:hover
+.btn-fb:hover,
+.btn-fb:focus
 {
   color:white;
   background-color: #3b5998;
   opacity: 0.8;
   border: none;
 }
+.btn-fb:active,
+.btn-fb.active
+{
+  color:white;
+  background-color: #3b5998;
+  opacity: 0.8;
+  border: none;
+}
+
 .btn-ig
 {
   color:white;
@@ -381,9 +391,16 @@ form .sub-q li{}
   display: inline-block;
   vertical-align: top;
 }
-
-
-#bg-panel li{list-style: none; display: inline-block; width: 30%;}
+#bg-panel{position:relative; display:none;}
+#bg-panel .blank-ig{position: absolute; top:8px; left:33%;}
+#bg-panel ul{padding:0; margin: 0; text-align: center; opacity: 0.6;}
+#bg-panel li{list-style: none; display: inline-block; width: 19%; position:relative;
+    overflow:hidden;}
+#bg-panel .media-tmp{position: relative;}
+#bg-panel .media-tmp .media-result{position: absolute; top:80px;}
+#bg-panel .media-tmp .media-content{position: absolute; bottom:40px; margin:0 15px;}
+#bg-panel .media-tmp .media-content .like-count{margin-left:30px;}
+#bg-panel .media-tmp .media-content .caption{font-size:10px; color:#888; word-wrap: break-word; overflow: hidden; max-height: 25px; line-height: 10px}
 
 footer {
     

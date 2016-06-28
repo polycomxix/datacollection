@@ -4,14 +4,14 @@ $(function(){
     cookies_expire.setTime(cookies_expire.getTime() + (1200 * 1000));// expires after 20 minute
 
     //console.log(Cookies.get("agreement"));
-    if(Cookies.get("agreement"))
-    {
+    //if(Cookies.get("agreement"))
+    //{
         //Cookies.remove('agreement');
-    }
-    else
-    {
-        window.location = "./";
-    }
+    //}
+    //else
+    //{
+        //window.location = "./";
+    //}
     //Cookies.set("pid","2");
     /*----------Default Scrip--------------*/
     //Show other textbox after selected Other choice

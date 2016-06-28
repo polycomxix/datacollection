@@ -7,7 +7,7 @@
 	if(true===isset($_GET['code']))//Check whether the user has granted access
 	{
 		$data =  $instagram->getOAuthToken($_GET['code']);
-		print_r($data);
+		//print_r($data);
 		if(empty($data->user->username))
 		{
 			header('Location: ../');
@@ -17,8 +17,8 @@
 		{
 			//echo $data->access_token;
 			$_SESSION['access_token'] = $data->access_token;
-        	//header('Location: ../quiz/instagram.html?approved=true'); 
-        	header('Location: ../instagram/get_ig_data.php'); 
+        	header('Location: ../quiz/instagram.html?approved=true'); 
+        	//header('Location: ../instagram/get_ig_data.php'); 
 		}
 	}
 	else

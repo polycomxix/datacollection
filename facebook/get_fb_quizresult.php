@@ -141,12 +141,6 @@
 			$year = date_format($p->getField('created_time'),'Y');
 			//echo $year."<br/><img src='".$p->getField('picture')."' alt='' /><br/>";
 			
-			if($year ==2015){
-				//echo "Year:".$year." ID:".$p->getField('id')." Total like:".count($p->getField('likes'))."<br/>";
-				//print_r(end($p->getField('images')));
-				//end($p->getField('images'));
-				//print_r($p->getField('images')->getField('width'));
-			}
 
 			switch ($year) {
 				case '2015':
