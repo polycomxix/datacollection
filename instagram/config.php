@@ -5,7 +5,7 @@
 	use MetzWeb\Instagram\Instagram;
 	define('CLIENT_ID','bec029c9d2c44d329f870d2ba0388754');
 	define('CLIENT_SECRET','00c1ffe4df984940bd7ca7964810c38b');
-	define('CALLBACK','http://localhost/app/instagram/callback.php');
+	define('CALLBACK','http://sns.jin.ise.shibaura-it.ac.jp/app/instagram/callback.php');
 
 	$instagram = new Instagram(array(
 		'apiKey' => CLIENT_ID,
