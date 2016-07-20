@@ -14,15 +14,30 @@
 		$conn = CreateConnection();
 		$access_token = $_SESSION['access_token'];
 		$fbid = GetFacebookUserProfile($access_token);
+		CloseConnection($conn);
 		//echo "FBID:".$fbid."<br/>";
 		if($fbid != false)
 		{
-			$result = GetFacebookQuizResult($access_token, $fbid);
+			//$result = GetFacebookQuizResult($access_token, $fbid);
+			$r = GetFacebookQuizResult2($access_token, $fbid);
 			//print_r($result);
 			//echo "RESULT: <hr/><br/>";
+			if($r){
+			$result =  array(
+								"avg"		=> $r['avg'],
+								"time"		=> $r['time'],
+								"active"	=> $r['active'],
+								"success"	=> true
+							);
+			}
+			else
+				$result = array(
+									"success"	=> false
+								);
+			
 			echo json_encode($result);
 		}
-		CloseConnection($conn);
+		
 	}
 	else
 	{
@@ -103,7 +118,107 @@
 		}
 		return $IsSuccess==true ? $fuser->id : $IsSuccess;
 	}
+	function GetFacebookQuizResult2($access_token, $fbid)
+	{
+
+		global $fb, $gpid, $since_date, $CURRENT_DATE;
+		$total_post=0;
+		$period	= array(0,0,0,0,0,0,0,0);
+
+
+		//$param = $fbid.'/feed?fields=id,created_time,type,from,likes.limit(200),message, status_type,comments{created_time,id,message,from,user_likes,comment_count,attachment}&limit=10';
+		$param	 = $fbid.'/feed?fields=id,created_time,status_type,type,from&limit=200';
+
+		//echo $param."<br/>";
+		$response = $fb->get($param, $access_token);
+		$feed = $response->getGraphEdge();
+		//echo "feed:".count($feed);
+		if(count($feed)==0)
+			return true; 
+
+		$i=1;
+		$break = false;
+		try{
+			do{
+				//echo $i."<br/>";
+				if($i!=1)//next loop
+				{	
+					$feed = $fb->next($feed);
+					if(count($feed)==0)
+					{
+						$break = true;
+						break;
+					}
+				}
+
+				foreach($feed as $f)
+				{
+					//fwrite($log_file, "Post ID ".$p->getField('id')."\r\n");
+
+					$created_at = date_format($f->getField('created_time'),'Y-m-d H:i:s');
+
+					if(empty($f) || $created_at<$since_date)
+					{
+						$break = true;
+						break;
+					}
+					$total_post++;
+					//$p = date( 'H', strtotime($f->created_at));
+					$p = date_format($f->getField('created_time'),'H');
+					//echo $f->getField('id')."__".$created_at."----".$p."<br/>";
+
+					switch ($p) {
+							case ($p>=0 && $p<3)://0-3
+								$period[0]++;
+								break;
+							case ($p>=3 && $p<6)://3-6
+								$period[1]++;
+								break;
+							case ($p>=6 && $p<9)://6-9
+								$period[2]++;
+								break;
+							case ($p>=9 && $p<12)://9-12
+								$period[3]++;
+								break;
+							case ($p>=12 && $p<15)://12-15
+								$period[4]++;
+								break;
+							case ($p>=15 && $p<18)://15-18
+								$period[5]++;
+								break;
+							case ($p>=18 && $p<21)://18-21
+								$period[6]++;
+								break;
+							case ($p>=21)://21
+								$period[7]++;
+								break;
+						}
 	
+				}//end for loop feed
+				$i++;
+
+				if($break) //no data, then stop looping
+					break;
+			}while($i!=15);
+
+			//echo "<br/> Total Tweet:".$total_tweet."<br/> Max:".array_search(max($period), $period);
+			$days = round(abs(strtotime($CURRENT_DATE)-strtotime($since_date))/86400);
+			$r['avg'] = number_format($total_post/$days,2);
+
+			$hour= array_search(max($period), $period);
+			$r['active'] = $hour>=18 ? 2 : 1;
+			
+			$start 	= ($hour*3).":00";
+			$end 	= ($start+3)."00";
+
+			$r['time'] = date('ga',strtotime($start))."-".date('ga',strtotime($end));
+			//print_r($r);
+			return $r;
+		}catch (Exception $e){
+			
+			return false;
+		}
+	}
 	function GetFacebookQuizResult($access_token, $fbid)
 	{
 		global $fb;

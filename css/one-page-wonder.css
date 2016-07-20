@@ -134,6 +134,9 @@ body {
     padding: 30px;
     margin-top: 20px;
 }
+.survey-page{
+  min-height: 620px;
+}
 .survey-page .thumbnail{
   margin-bottom: 0px;
 }

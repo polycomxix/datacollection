@@ -85,15 +85,15 @@
             <div class="row">
                 <div class="col-md-8 col-sm-12">
                     <div class="twitter-result result-container">
-                        <h2><strong>Popular FB profile picture in 2012-2015</strong></h2>
+                        <h2><strong>How often do you post in 2016?</strong></h2>
                         <div class="quiz-processing text-center">
                             <img src="../images/ellipsis.gif" alt=""/>
                             <div class="quiz-processing-msg">connecting to account</div>
                         </div>
                         <div class="result-area">
                             <canvas id="myCanvas" style="position:absolute;"></canvas>
-                            <div id="twitter-quiz-result" class="thumbnail">
-                                <img src="../images/fbquiz.jpg" alt=""/>
+                            <div id="fb-quiz-result" class="thumbnail">
+                                <img src="../images/fbquiz1.jpg" alt=""/>
                             </div>
                             <div class="connect-button text-center">
                                 <button type="button"class="btn btn-primary btn-fb btn-connect-fb" data-target="#modal-agreement">
@@ -138,16 +138,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12 col-sm-6">
+                        <!--<div class="col-md-12 col-sm-6">
                             <div class="thumbnail text-center">
                                 <img src="../images/igquiz.jpg" alt="">
                                 <div class="caption">
                                     <h3>Your popular IG media in 2016</h3>
-                                    <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                                     <button type="button"class="btn btn-info" onclick="javascript:window.location.href = '../quiz/instagram.html'">Let's start</button> 
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
 
                     </div>
                 </div>
@@ -225,21 +225,22 @@
         console.log($.urlParam('approved'));
         if($.urlParam('approved')=="true")
         {
-            /*$(".quiz-processing").show();
+            $(".quiz-processing").show();
             $(".quiz-processing-msg").text("processing results");
             $(".result-area").hide();
-            $(".connect-button").hide();*/
+            $(".connect-button").hide();
             $.get("../facebook/get_fb_quizresult.php", function (data) {
                 console.log(data);
                 if(data['success'] == true)
                 {
+                    showQuizResult(data);
                     //console.log(data['content']);
-                    var html ="";
+                    /*var html ="";
                     for(i=0; i<data['content'].length; i++)
                     {
                         html += "<div>Year:"+data['content'][i][0]+ " Like:"+data['content'][i][2]+"</div><div><img src='"+decodeURIComponent(data['content'][i][1])+"' alt='' /><div>";
                     }
-                    $(".result-area").append(html);
+                    $(".result-area").append(html);*/
 
                 }
                     //showQuizResult(data);
@@ -259,7 +260,7 @@
             var ctx = c.getContext("2d");
             var img=new Image();
             img.onload=start;
-            img.src="../images/quiz_result_bg"+data['active']+".jpg";
+            img.src="../images/fbquiz_result.jpg";
             function start(){
                 ctx.drawImage(img,0,0);
                 ctx.font = "96px Tahoma bold";
@@ -270,7 +271,7 @@
                 ctx.font = "45px Tahoma bold";
                 ctx.fillText(data['time'], 977,500);
                 var imgDataUrl = c.toDataURL("image/png");
-                $("#twitter-quiz-result img").attr("src", imgDataUrl);
+                $("#fb-quiz-result img").attr("src", imgDataUrl);
                 c.remove();
 
                 $(".share-button").show();

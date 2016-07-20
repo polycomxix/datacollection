@@ -366,11 +366,23 @@ $(function(){
 
     /*----------End Validate Form--------------*/
 
-    $(".btn-start").click(function(){
+    /*$(".btn-start").click(function(){
         $(".agreement").hide();
         $(".surveycontent").show();
-    });
+    });*/
     /*$(".btn-agreement-decline").click(function(){
         window.location.href="./";
     });*/
+        $("#modal-agreement").on('shown.bs.modal',function(event){
+            var button = $(event.relatedTarget);
+            var recipient = button.data('btnid');
+            console.log(recipient);
+            $(".btn-agree").click(function(){
+                Cookies.remove('agreement');
+                Cookies.set("agreement","1");
+                $('#modal-agreement').modal('hide');
+                $(".agreement").hide();
+                $(".surveycontent").show();
+            });
+        });
 });

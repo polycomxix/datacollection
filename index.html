@@ -129,16 +129,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-6 hero-feature">
+                <!--<div class="col-md-4 col-sm-6 hero-feature">
                     <div class="thumbnail">
                         <img src="./images/igquiz.jpg" alt="">
                         <div class="caption">
                             <h3>Your popular IG media in 2016</h3>
-                            <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
                             <button type="button"class="btn btn-info" onclick="javascript:window.location.href = './quiz/instagram.html'">Let's start</button> 
                         </div>
                     </div>
-                </div>
+                </div>-->
 
                 
             </div>
@@ -206,32 +205,7 @@
     </div>
     <!-- /.container -->
 
-    <!-- Dialog -->
-    <div id="modal-agreement" class="modal fade" tabindex="-1" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Term of Agreement</h4>
-          </div>
-          <div class="modal-body">
-            <p>Please read the following description then press the button as an indication that you are accept to this consent document.</p>
-            <ul>
-                <ol>Purpose</ol>
-                <ol>Time</ol>
-                <ol>Questionnaire</ol>
-                <ol>Handling of results</ol>
-                <ol>The benefit to experiment</ol>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-success btn-agree">Agree</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Decline</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-    <!-- /Dialog -->
+    
 
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
@@ -245,9 +219,8 @@
 </html>
 <script type="text/javascript">
     $(document).ready(function(){
-        //$("#modal-agreement").modal();
         Cookies.remove('pid');
-        Cookies.remove('agreement');
+        //Cookies.remove('agreement');
         //console.log(Cookies.get("pid"));
         $("#modal-agreement").on('shown.bs.modal',function(event){
             var button = $(event.relatedTarget);

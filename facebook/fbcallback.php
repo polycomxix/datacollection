@@ -29,7 +29,7 @@
 	  	// access token from $_SESSION['facebook_access_token']
 	}
 	else{
-		$loginUrl = $helper->getLoginUrl('http://localhost:800/datacollection/facebook/fbcallback.php', $permissions);
+		$loginUrl = $helper->getLoginUrl('http://localhost/app/facebook/fbcallback.php', $permissions);
 		header("Location: ".$loginUrl);
 	}
 
