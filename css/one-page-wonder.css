@@ -394,9 +394,11 @@ form .sub-q li{}
   display: inline-block;
   vertical-align: top;
 }
-#bg-panel{position:relative; display:none;}
+#bg-panel{position:relative; display:block;}
 #bg-panel .blank-ig{position: absolute; top:8px; left:33%;}
-#bg-panel ul{padding:0; margin: 0; text-align: center; opacity: 0.6;}
+#bg-panel ul{padding:0; margin: 0; text-align: center;}
+.facebook-result #bg-panel li{list-style: none; display: inline-block; width: 24%; position:relative;
+    overflow:hidden; vertical-align: top;}
 #bg-panel li{list-style: none; display: inline-block; width: 19%; position:relative;
     overflow:hidden;}
 #bg-panel .media-tmp{position: relative;}
@@ -404,6 +406,12 @@ form .sub-q li{}
 #bg-panel .media-tmp .media-content{position: absolute; bottom:40px; margin:0 15px;}
 #bg-panel .media-tmp .media-content .like-count{margin-left:30px;}
 #bg-panel .media-tmp .media-content .caption{font-size:10px; color:#888; word-wrap: break-word; overflow: hidden; max-height: 25px; line-height: 10px}
+
+.facebook-result ul{padding:20px 0;}
+.facebook-result .year{font-size: 1.7em; font-weight: bold; color:#9d9d9d;}
+.facebook-result .profilepic{    height: 170px;width: auto;overflow: hidden; background-color: #eee;}
+.facebook-result .profilepic img{width: 100%;}
+.facebook-result .like-count{font-size: 1.5em; color:#337ab7;}
 
 footer {
     
