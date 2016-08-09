@@ -29,7 +29,7 @@
 	  	// access token from $_SESSION['facebook_access_token']
 	}
 	else{
-		$loginUrl = $helper->getLoginUrl('http://localhost/app/facebook/fbcallback.php', $permissions);
+		$loginUrl = $helper->getLoginUrl('http://sns.jin.ise.shibaura-it.ac.jp/app/facebook/fbcallback.php', $permissions);
 		header("Location: ".$loginUrl);
 	}
 
