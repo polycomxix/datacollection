@@ -9,7 +9,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SNS Research - Popular FB profile picture </title>
+    <title>SNS Research - How often do you Post in 2016? </title>
+    <link rel='shortcut icon' type='image/x-icon' href='.images/favicon.ico' />
 
     <!-- Bootstrap Core CSS -->
     <link href="../css/bootstrap.css" rel="stylesheet">
@@ -84,29 +85,16 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8 col-sm-12">
-                    <div class="facebook-result result-container">
-                        <h2><strong>Popular FB profile picture in 2012-2015</strong></h2>
+                    <div class="twitter-result result-container">
+                        <h2><strong>How often do you post in 2016?</strong></h2>
                         <div class="quiz-processing text-center">
                             <img src="../images/ellipsis.gif" alt=""/>
                             <div class="quiz-processing-msg">connecting to account</div>
                         </div>
                         <div class="result-area">
                             <canvas id="myCanvas" style="position:absolute;"></canvas>
-                            <div id="bg-panel">
-                                <ul></ul>
-                                <!--<ul>
-                                    <li>
-                                        <div class="year">2012</div>
-                                        <img src="../images/experimenter.jpg" class="img img-responsive full-width"/>
-                                        <div><span class="like-count">70</span> likes</div>
-                                    </li>
-                                    <li><img src="../images/experimenter.jpg" class="img img-responsive full-width"/></li>
-                                    <li><img src="../images/experimenter.jpg" class="img img-responsive full-width"/></li>
-                                    <li><img src="../images/experimenter.jpg" class="img img-responsive full-width"/></li>
-                                </ul>-->
-                            </div>
                             <div id="fb-quiz-result" class="thumbnail">
-                                <img src="../images/fbquiz.jpg" alt=""/>
+                                <img src="../images/fbquiz1.jpg" alt=""/>
                             </div>
                             <div class="connect-button text-center">
                                 <button type="button"class="btn btn-primary btn-fb btn-connect-fb" data-toggle="modal" data-target="#modal-agreement">
@@ -227,7 +215,6 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/js.cookie.js"></script>
-    <script src="../js/html2canvas.min.js"></script>
 
 </body>
 
@@ -250,10 +237,11 @@
             $(".quiz-processing-msg").text("processing results");
             $(".result-area").hide();
             $(".connect-button").hide();
-            $.get("../facebook/get_fb_quizresult1.php", function (data) {
+            $.get("../facebook/get_fb_quizresult.php", function (data) {
                 console.log(data);
                 if(data['success'] == true)
                 {
+                    showQuizResult(data);
                     //console.log(data['content']);
                     /*var html ="";
                     for(i=0; i<data['content'].length; i++)
@@ -261,7 +249,7 @@
                         html += "<div>Year:"+data['content'][i][0]+ " Like:"+data['content'][i][2]+"</div><div><img src='"+decodeURIComponent(data['content'][i][1])+"' alt='' /><div>";
                     }
                     $(".result-area").append(html);*/
-                    showQuizResult(data);
+
                 }
                     //showQuizResult(data);
                 
@@ -269,31 +257,33 @@
         }
 
         function showQuizResult(data)
-        {
+        { 
             $(".quiz-processing").hide();
             $(".result-area").show();
-            $("#bg-panel").show();
 
-            for(var i=0; i<data['content'].length; i++)
-            {
-                var img = data['content'][i][1] !=null ? decodeURIComponent(data['content'][i][1]) : window.location.origin+"/app/images/no-img.jpg";
-                var like = data['content'][i][1] !=null ? '<span class="like-count">'+data['content'][i][2]+'</span> likes' : 'no image';
-                var t = '<li><div class="year">'+data['content'][i][0]+'</div><div class="profilepic"><img src="'+img+'" class="img img-responsive full-width"/></div><div>'+like+'</div></li>';
-                $("#bg-panel ul").append(t);
+
+            var c = document.getElementById("myCanvas");
+            c.width = 1200;
+            c.height = 630;
+            var ctx = c.getContext("2d");
+            var img=new Image();
+            img.onload=start;
+            img.src="../images/fbquiz_result.jpg";
+            function start(){
+                ctx.drawImage(img,0,0);
+                ctx.font = "96px Tahoma bold";
+                ctx.fillStyle =  "#ffffff";
+                ctx.textAlign="center";
+                ctx.fillText(data['avg'], 645,440);
+
+                ctx.font = "45px Tahoma bold";
+                ctx.fillText(data['time'], 977,500);
+                var imgDataUrl = c.toDataURL("image/png");
+                $("#fb-quiz-result img").attr("src", imgDataUrl);
+                c.remove();
+
+                $(".share-button").show();
             }
-
-            html2canvas($("#bg-panel"), {
-                logging: false,
-                useCORS: true,
-                onrendered: function(canvas) {
-                    var imgDataUrl = canvas.toDataURL("image/png");
-                    $("#fb-quiz-result img").attr("src", imgDataUrl);
-                    $("#bg-panel").hide();
-
-                }
-            });
-
-            $(".share-button").show();
         }
         $("#modal-agreement").on('shown.bs.modal',function(event){
             var button = $(event.relatedTarget);
@@ -305,10 +295,24 @@
                 $(".quiz-processing-msg").text("connecting to account");
                 $(".quiz-processing").show();
                 $(".result-area").hide();
-                window.location = "../facebook/fbcallback1.php";
+                window.location = "../facebook/fbcallback.php";
             });
         });
 
+        /*$(".btn-connect-fb").click(function(){
+            $(".quiz-processing-msg").text("connecting to account");
+            $(".quiz-processing").show();
+            $(".result-area").hide();
+            window.location = "../facebook/fbcallback.php";
+        });*/
+
+        //$(".twitter-result").hide();
+        /*$.get("./twitter/get_tweet_data.php", function (data) {
+            console.log(data);
+            console.log(data['user_id']);
+            $(".loading").hide();
+            $(".twitter-result").show();
+        },'json');*/
         /*$(".btn-tweet").click(function(){
             var loc = 'http://' + window.location.hostname + window.location.pathname;
             var title  = escape('How often do you Tweet?');

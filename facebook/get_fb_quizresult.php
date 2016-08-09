@@ -18,22 +18,10 @@
 		//echo "FBID:".$fbid."<br/>";
 		if($fbid != false)
 		{
-			//$result = GetFacebookQuizResult($access_token, $fbid);
-			$r = GetFacebookQuizResult2($access_token, $fbid);
+			$result = GetFacebookQuizResult($access_token, $fbid);
+			//$r = GetFacebookQuizResult2($access_token, $fbid);
 			//print_r($result);
 			//echo "RESULT: <hr/><br/>";
-			if($r){
-			$result =  array(
-								"avg"		=> $r['avg'],
-								"time"		=> $r['time'],
-								"active"	=> $r['active'],
-								"success"	=> true
-							);
-			}
-			else
-				$result = array(
-									"success"	=> false
-								);
 			
 			echo json_encode($result);
 		}
