@@ -16,7 +16,7 @@
 	$CURRENT_DATE = date_format(new DateTime("now", new DateTimeZone('Asia/Tokyo')),'Y-m-d H:i:s');
 
 	$since_date = new DateTime();
-	$since_date->setDate(2015,1,1);
+	$since_date->setDate(2016,1,1);
 	$since_date->setTime(0,0,0);
 	$since_date = date_format($since_date,'Y-m-d H:i:s');
 

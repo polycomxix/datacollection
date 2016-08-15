@@ -11,6 +11,7 @@
     <meta name="author" content="">
 
     <title>SNS Research - Popular FB profile picture </title>
+    <link rel='shortcut icon' type='image/x-icon' href='./images/favicon.ico' />
 
     <!-- Bootstrap Core CSS -->
     <link href="../css/bootstrap.css" rel="stylesheet">
@@ -265,17 +266,18 @@
         {
             $(".quiz-processing").hide();
             $(".result-area").show();
-            $("#bg-panel").show();
+            $("#bg-panel").show().addClass('thumbnail');
 
             for(var i=0; i<data['content'].length; i++)
             {
                 var img = data['content'][i][1] !=null ? decodeURIComponent(data['content'][i][1]) : window.location.origin+"/app/images/no-img.jpg";
                 var like = data['content'][i][1] !=null ? '<span class="like-count">'+data['content'][i][2]+'</span> likes' : 'no image';
-                var t = '<li><div class="year">'+data['content'][i][0]+'</div><div class="profilepic"><img src="'+img+'" class="img img-responsive full-width"/></div><div>'+like+'</div></li>';
+                var t = '<li class=""><div class="year">'+data['content'][i][0]+'</div><div class="profilepic"><img src="'+img+'" class="img img-responsive full-width"/></div><div>'+like+'</div></li>';
                 $("#bg-panel ul").append(t);
             }
+            $("#fb-quiz-result").hide();
 
-            html2canvas($("#bg-panel"), {
+            /*html2canvas($("#bg-panel"), {
                 logging: false,
                 useCORS: true,
                 onrendered: function(canvas) {
@@ -284,7 +286,7 @@
                     $("#bg-panel").hide();
 
                 }
-            });
+            });*/
 
             $(".share-button").show();
         }

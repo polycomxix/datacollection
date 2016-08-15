@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	//set_time_limit (120);
-	$root = $_SERVER['DOCUMENT_ROOT']."/datacollection";
+	$root = "/var/www/html/app";
 
 	include_once($root."/facebook/config.php");
 	include_once($root."/php/connect.php");
@@ -423,7 +423,7 @@
 			if($i!=1)
 				$sql .=", ";
 
-			$sql .= "('$p->post_id', '$fbid', $pid, '$p->created_at', '$p->status_type', '$p->media', '$p->pic_url', '$p->action', '$p->parent_id', '$p->total_like','".mysql_real_escape_string($p->message)."', '".mysql_real_escape_string($p->story)."', '".mysql_real_escape_string($p->place)."', '$p->message_tags', '$p->story_tags', '$p->with_tags')";
+			$sql .= "('$p->post_id', '$fbid', $pid, '$p->created_at', '$p->status_type', '$p->media', '$p->pic_url', '$p->action', '$p->parent_id', '$p->total_like','".mysqli_real_escape_string($conn, $p->message)."', '".mysqli_real_escape_string($conn, $p->story)."', '".mysqli_real_escape_string($conn, $p->place)."', '$p->message_tags', '$p->story_tags', '$p->with_tags')";
 			$i++;
 		}
 

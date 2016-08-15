@@ -1,6 +1,7 @@
 <?php
 	//header('Content-type: application/json');
-	require_once("connect.php");
+	$root = "/var/www/html/app";
+	require_once($root."/php/connect.php");
 	/*---------------DEFINE---------------*/
 	const MAX_NO_CHECKBOX = 8;
 	const MAX_NO_CHOICE = 12;
