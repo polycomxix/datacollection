@@ -1,7 +1,8 @@
 <?php
 	session_start();
-	$root = $_SERVER['DOCUMENT_ROOT']."/datacollection";
 
+	$root = "/var/www/html/app";
+	//echo $root;
 	include_once($root."/twitter/config.php");
 	include_once($root."/php/connect.php");
 	include_once($root."/twitter/twitter_class.php");
@@ -22,7 +23,7 @@
 		while($row = $result->fetch_assoc())
 		{	
 			array_push($userlist,$row);
-			//UpdateReserveUser($row['user_id'],1);//reserve
+			UpdateReserveUser($row['user_id'],1);//reserve
 		}
 	}
 	CloseConnection($conn);
@@ -37,6 +38,7 @@
 			$time_start = microtime(true);
 
 			$gpid = $userlist[$i]['pid'];
+			$timezone_offset=$userlist[$i]['timezone_offset'];
 			echo "gpid:".$gpid."<br/>";
 
 			//Create log file
@@ -49,8 +51,8 @@
 			//Start query
 			$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $userlist[$i]['token'] , $userlist[$i]['token_secret']);
 
-			GetTwitterActivities($connection, $userlist[$i]['user_id']);
-			GetTwitterFavorite($connection, $userlist[$i]['user_id']);
+			GetTwitterActivities($connection, $userlist[$i]['user_id'],$timezone_offset);
+			GetTwitterFavorite($connection, $userlist[$i]['user_id'], $timezone_offset);
 
 			//Update User
 			//UpdateReserveUser($userlist[$i]['user_id'],2);//finish
@@ -63,7 +65,7 @@
 	}//end if $userlist
 
 
-	function GetTwitterActivities($tconn, $userid)
+	function GetTwitterActivities($tconn, $userid, $timezone_offset)
 	{
 		global $log_file, $since_date;
 		$tact = array();
@@ -97,7 +99,7 @@
 				$j = 1;
 				foreach($tweet as $t)
 				{
-					$created_at = date( 'Y-m-d H:i:s', strtotime($t->created_at));
+					$created_at = date( 'Y-m-d H:i:s', (strtotime($t->created_at)+$timezone_offset));
 					if(empty($t) || $created_at<$since_date)
 					{
 						$break = true;
@@ -143,12 +145,12 @@
 
 					$tweetact->user_id 				= $userid;
 					$tweetact->tweet_id 			= $t->id_str;
-					$tweetact->created_at 			= date( 'Y-m-d H:i:s', strtotime($t->created_at));
+					$tweetact->created_at 			= date( 'Y-m-d H:i:s', (strtotime($t->created_at)+$timezone_offset));
 					$tweetact->action 				= $action;
 					$tweetact->text 				= $t->text;
 					$tweetact->in_reply_ref			= $reply_ref;
 					$tweetact->retweeted_id			= $retweeted_id;
-					$tweetact->retweeted_created_at = $retweeted_created_at!=null ? date( 'Y-m-d H:i:s', strtotime($retweeted_created_at)) : null;
+					$tweetact->retweeted_created_at = $retweeted_created_at!=null ? date( 'Y-m-d H:i:s', (strtotime($retweeted_created_at)+$timezone_offset)) : null;
 					$tweetact->media 				= $tweettype;
 					$tweetact->attached_link		= $attached_link;
 					$tweetact->source 				= GetTextFromTag($t->source);
@@ -183,7 +185,7 @@
 		fwrite($log_file, "Complete adding tweet\r\n");
 	}
 
-	function GetTwitterFavorite($tconn, $userid)
+	function GetTwitterFavorite($tconn, $userid, $timezone_offset)
 	{
 		global $log_file, $since_date;
 
@@ -218,7 +220,7 @@
 				$j = 1;
 				foreach($favorite as $fav)
 				{
-					$created_at = date( 'Y-m-d H:i:s', strtotime($fav->created_at));
+					$created_at = date( 'Y-m-d H:i:s', (strtotime($fav->created_at)+$timezone_offset));
 
 					if(empty($fav) || $created_at<$since_date)
 					{
@@ -336,7 +338,7 @@
 			if($i!=1)
 				$sql .=", ";
 
-			$sql .= "('$pid','$ts->user_id', '$ts->tweet_id', '$ts->created_at', '$ts->action', '".mysql_real_escape_string($ts->text)."', '$ts->in_reply_ref', '$ts->retweeted_id', '$ts->retweeted_created_at', '$ts->media', '$ts->attached_link', '$ts->source', '$ts->no_user_mention', '$ts->no_hashtags', '$ts->favorite_count', '$ts->retweet_count')";
+			$sql .= "('$pid','$ts->user_id', '$ts->tweet_id', '$ts->created_at', '$ts->action', '".mysqli_real_escape_string($conn, $ts->text)."', '$ts->in_reply_ref', '$ts->retweeted_id', '$ts->retweeted_created_at', '$ts->media', '$ts->attached_link', '$ts->source', '$ts->no_user_mention', '$ts->no_hashtags', '$ts->favorite_count', '$ts->retweet_count')";
 			$i++;
 		}
 			//echo $sql;
@@ -363,7 +365,8 @@
 			if($i!=1)
 				$sql .=", ";
 
-			$sql .= "('$pid','$ts->user_id', '$ts->fav_id', '$ts->parent_id', '$ts->created_at', '".mysql_real_escape_string($ts->text)."', '$ts->media', '$ts->attached_link', '$ts->source', '$ts->no_user_mention', '$ts->no_hashtags', '$ts->favorite_count', '$ts->retweet_count')";
+			$sql .= "('$pid','$ts->user_id', '$ts->fav_id', '$ts->parent_id', '$ts->created_at', '".mysqli_real_escape_string($conn, $ts->text)."', '$ts->media', '$ts->attached_link', '$ts->source', '$ts->no_user_mention', '$ts->no_hashtags', '$ts->favorite_count', '$ts->retweet_count')";
+			//echo $sql;
 			$i++;
 		}
 			//echo $sql;

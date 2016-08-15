@@ -34,7 +34,7 @@
 
 	function GetFacebookUserProfile($access_token)
 	{
-		global $fb, $conn, $gpid;
+		global $fb, $conn, $gpid, $cookie_expired;
 		$IsSuccess = true;
 
 		$response = $fb->get('/me?fields=id,name,gender,birthday,location,friends.summary(true)', $access_token);
@@ -78,8 +78,11 @@
 						//echo "Update User Profile";
 						if(!CreateFacebookUserProfile($fuser,$pid))
 							$IsSuccess = false;
+						else
+							setcookie("pid",$gpid,$cookie_expired, "/");
 						//echo $IsSuccess;
 					}
+					
 				}
 				else // new user
 				{
@@ -88,9 +91,11 @@
 					//echo "PID:".$pid;
 					if($pid!=false)
 					{
-						$gpid=$pid; 
+						$gpid=$pid;
 						if(!CreateFacebookUserProfile($fuser,$pid))
 							$IsSuccess = false;
+						else
+							setcookie("pid",$gpid,$cookie_expired, "/");
 					} 
 				}
 			}
@@ -300,11 +305,7 @@
 			}
 			
 		}
-		//echo "famous pic id:".$pic[0]."count: ".$count[0]."<br/>";
-		/*echo "<img src='".$pic[3]."' alt='' />";
-		echo "<img src='".$pic[2]."' alt='' />";
-		echo "<img src='".$pic[1]."' alt='' />";
-		echo "<img src='".$pic[0]."' alt='' />";*/
+
 		$result = array(
 						"success"	=>	true,
 						"content"	=>	array(

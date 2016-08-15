@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <title>SNS Research - Home</title>
-    <link rel='shortcut icon' type='image/x-icon' href='.images/favicon.ico' />
+    <link rel='shortcut icon' type='image/x-icon' href='./images/favicon.ico' />
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -228,29 +228,8 @@
 </html>
 <script type="text/javascript">
     $(document).ready(function(){
-        Cookies.remove('pid');
+        //Cookies.remove('pid');
         //Cookies.remove('agreement');
-        //console.log(Cookies.get("pid"));
-        $("#modal-agreement").on('shown.bs.modal',function(event){
-            var button = $(event.relatedTarget);
-            var recipient = button.data('btnid');
-            console.log(recipient);
-            $(".btn-agree").click(function(){
-                Cookies.remove('agreement');
-                Cookies.set("agreement","1");
-                //go to quesntionnaire
-                if(recipient == 1)
-                    window.location = "./survey.html";
-                else if(recipient ==2)
-                    window.location = "./";
-                else if (recipient==3)
-                {
-                    window.location = "./quiz/twitter.html";
-                }
-                    
-                else
-                    window.location = "./";
-            });
-        });
+        console.log(Cookies.get("pid"));
     });
 </script>

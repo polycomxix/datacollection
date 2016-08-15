@@ -1,7 +1,7 @@
 $(function(){
     
     var cookies_expire = new Date();
-    cookies_expire.setTime(cookies_expire.getTime() + (1200 * 1000));// expires after 20 minute
+    cookies_expire.setTime(cookies_expire.getTime() + (30*60*1000));// expires after 30 minute
 
     //console.log(Cookies.get("agreement"));
     //if(Cookies.get("agreement"))
@@ -13,7 +13,7 @@ $(function(){
         //window.location = "./";
     //}
     //Cookies.set("pid","2");
-    /*----------Default Scrip--------------*/
+    /*----------Default Script--------------*/
     //Show other textbox after selected Other choice
     $("input[type=radio], input[type=checkbox]").on("click",function(){
         var $that = $(this);

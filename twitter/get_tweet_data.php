@@ -11,10 +11,10 @@
 	/*------------Initial Variable-------------*/
 	const MAX_PAGE = 2;
 
-
+	//setcookie("pid", "", time() - 3600);
 	$tuser = new Profile();
-
 	$gpid = isset($_COOKIE['pid']) ? $_COOKIE['pid'] : null;
+	$timezone_offset = null;
 
 	/*------------/Initial Variable-------------*/
 
@@ -33,7 +33,8 @@
 								"avg"		=> $r['avg'],
 								"time"		=> $r['time'],
 								"active"	=> $r['active'],
-								"success"	=> true
+								"success"	=> true,
+								"expired"	=> $_COOKIE['pid']
 							);
 		}
 		else
@@ -47,10 +48,10 @@
 	function GetTwitterQuizResult($tconn, $userid)
 	{
 		//define default parameter
-		global $access_token, $since_date, $CURRENT_DATE;
+		global $access_token, $since_date, $CURRENT_DATE, $timezone_offset;
 		$total_tweet = 0;//
 		$period	= array(0,0,0,0,0,0,0,0);
-
+		//echo "timezone_offset:".$timezone_offset."<br/>";
 		try{
 			//$userid = 282918691;
 			$param = array("count"=>200,"user_id"=>$userid,"page"=>null);//oyoeoyo polycomxix tangjaidee 282918691
@@ -73,7 +74,7 @@
 					$j = 1;
 					foreach($tweet as $t)
 					{
-						$created_at = date( 'Y-m-d H:i:s', strtotime($t->created_at));
+						$created_at = date( 'Y-m-d H:i:s', (strtotime($t->created_at)+$timezone_offset));;
 						if(empty($t) || $created_at<$since_date)
 						{
 							$break = true;
@@ -81,7 +82,7 @@
 						}
 
 						$total_tweet++;
-						$p = date( 'H', strtotime($t->created_at));
+						$p = date( 'H', (strtotime($t->created_at)+$timezone_offset));
 						//echo "Date:".date( 'Y-m-d H:i:s', strtotime($t->created_at))." Hour:".$p."<br/>";
 
 						switch ($p) {
@@ -138,7 +139,7 @@
 	
 	function GetTwitterProfile($tconn)
 	{
-		global $tuser;
+		global $tuser, $timezone_offset;
 		$user = $tconn->get("account/verify_credentials");
 
 		$tuser->id 			= $user->id;
@@ -151,6 +152,8 @@
 		$tuser->joined_date	= date( 'Y-m-d H:i:s', strtotime($user->created_at));
 		$tuser->location 	= $user->location != null ? $user->location : $user->time_zone;
 
+		$tuser->timezone_offset = $user->utc_offset;
+		$timezone_offset = $user->utc_offset;
 		SaveTwitterProfile($tuser);
 	}
 	
@@ -182,6 +185,7 @@
 	{
 		$conn = CreateConnection();
 		$s = "SELECT * FROM ".$tb_name." WHERE ".$field." = '$val'";
+		//echo "SQL:".$s."<br/>";
 		$result = $conn->query($s);
 		CloseConnection($conn);
 		return $result;
@@ -221,13 +225,16 @@
 	function CreateTwitterProfile($user,$pid)
 	{
 		global $access_token;
+		$token = $access_token['oauth_token'];
+		$token_secret = $access_token['oauth_token_secret'];
+
 		$conn = CreateConnection();
-		$s = 	"INSERT INTO tb_twitter_profile (user_id, pid, screen_name, followers_count, friends_count, favourites_count, statuses_count, joined_date, access_token) ".
-		"VALUES ('$user->id','$pid','$user->screen_name','$user->follower','$user->friend','$user->favorite','$user->statuse','$user->joined_date', 'access_token')";
+		$s = 	"INSERT INTO tb_twitter_profile (user_id, pid, screen_name, followers_count, friends_count, favourites_count, statuses_count, joined_date, token, token_secret, timezone_offset) ".
+		"VALUES ('$user->id','$pid','$user->screen_name','$user->follower','$user->friend','$user->favorite','$user->statuse','$user->joined_date', '$token', '$token_secret', '$user->timezone_offset')";
 		$return = true;
 		if (!mysqli_query($conn, $s)) {
 							    //echo "Insert ID:".$pid."\r\n";
-			//echo "Error: " . $s . "<br>" . mysqli_error($conn);
+			echo "Error: " . $s . "<br>" . mysqli_error($conn);
 			$return = false;
 		} 
 		CloseConnection($conn);
@@ -241,7 +248,7 @@
 		$return = null;
 		$conn = CreateConnection();
 		$s = "UPDATE tb_twitter_profile SET screen_name = '$user->screen_name', followers_count='$user->follower', friends_count='$user->friend',".
-		"favourites_count='$user->favorite', statuses_count='$user->statuse', joined_date='$user->joined_date', updated_date= '$CURRENT_DATE', token='$token', token_secret='$token_secret', status=0 ".
+		"favourites_count='$user->favorite', statuses_count='$user->statuse', joined_date='$user->joined_date', updated_date= '$CURRENT_DATE', token='$token', token_secret='$token_secret', status=0, timezone_offset='$user->timezone_offset' ".
 		"WHERE user_id = '$user->id'";
 		
 		if (!mysqli_query($conn, $s)) {
@@ -252,15 +259,18 @@
 		else{
 			$s = "SELECT pid FROM tb_twitter_profile WHERE user_id = '$user->id';";
 			$result = $conn->query($s);
+			//print_r($result);
 			if ($result->num_rows > 0) {
 				// output data of each row
 				$row = $result->fetch_assoc();
-				//print_r($row);
 				$return= $row['pid'];
 			}
-			$return= false;
+			else
+				$return= false;
+			
 		}
 		CloseConnection($conn);
+
 		return $return;
 	}
 
@@ -273,12 +283,11 @@
 		mysqli_query($conn,"START TRANSACTION");
 		try{
 			//Check Twitter ID
-			//$_COOKIE['pid']=77;
 			$result 		= IsCurrentUser('tb_user','twitter_id',$user->id);
 			$hasTwitterId	= ($result->num_rows > 0) ? true : false;
-
 			if(!$hasTwitterId)
 			{
+				//echo "GPID:".$gpid."<br/>";
 				if($gpid!=null)//Current User
 				{
 					//Update tb_user
@@ -301,7 +310,10 @@
 					{
 						if(!CreateTwitterProfile($user,$pid))
 							$IsSuccess = false;
+						else
+							setcookie("pid",$gpid,$cookie_expired, "/");
 					}
+					
 				}
 				else //new user
 				{
@@ -310,11 +322,14 @@
 					$pid = CreateUserProfile($user->id, $user->location);
 					//echo "PID:".$pid;
 					//Create new twitter profile in tb_twitter_profile
+					//echo "PID:".$pid."<br/>";
 					if($pid!=false)
 					{
 						$gpid=$pid; 
 						if(!CreateTwitterProfile($user,$pid))
 							$IsSuccess = false;
+						else
+							setcookie("pid",$gpid,$cookie_expired, "/");
 					}
 				}
 			}
@@ -328,7 +343,7 @@
 				}
 				else{
 					$gpid =$val;
-					//echo "gpid:".$gpid;
+					setcookie("pid",$gpid,$cookie_expired, "/");
 				}
 			}
 
