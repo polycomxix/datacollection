@@ -450,7 +450,7 @@
 			if($i!=1)
 				$sql .=", ";
 
-			$sql .= "('$p->comment_id', '$p->parent_post_id', '$p->user_id', '$pid', '$p->created_at', '$p->action', '$p->total_like', '$p->total_reply','".mysql_real_escape_string($p->message)."', '$p->media', '$p->message_tags' )";
+			$sql .= "('$p->comment_id', '$p->parent_post_id', '$p->user_id', '$pid', '$p->created_at', '$p->action', '$p->total_like', '$p->total_reply','".mysqli_real_escape_string($conn, $p->message)."', '$p->media', '$p->message_tags' )";
 			$i++;
 		}
 			//echo $sql;

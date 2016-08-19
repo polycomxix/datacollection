@@ -29,6 +29,7 @@
 		{
 			$pid = null;
 			//Check new user or current user
+			$conn = CreateConnection();
 			mysqli_query($conn,"START TRANSACTION");
 			try{
 
@@ -146,11 +147,12 @@
 			{
 				mysqli_query($conn,"ROLLBACK");
 			}	
-			$conn->close();
+			CloseConnection($conn);
 		}
 		else if ($data->{"condition"}==2 && isset($data->{"pid"})) {
 			$pid=$data->{"pid"};
 			//print_r($data);
+			$conn = CreateConnection();
 			mysqli_query($conn,"START TRANSACTION");
 			try{
 				for($i=1; $i<=NO_QUESTION_PART3; $i++)
@@ -173,7 +175,7 @@
 			{
 				mysqli_query($conn,"ROLLBACK");
 			}
-			$conn->close();
+			CloseConnection($conn);
 		}
 	}
 	else

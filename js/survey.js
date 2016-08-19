@@ -270,6 +270,7 @@ $(function(){
                     {
                         Cookies.set("pid",data.pid,{expires:cookies_expire});
                     }
+                   console.log(Cookies.get("pid"));
                     next_step_3();
                 },
                 error: function (jqXHR, exception) {
