@@ -12,7 +12,6 @@
 	//pramemanuch45360666
 	//run service cmd php -f "C:\xampp\htdocs\datacollection\services\get_fb_data.php"
 	
-	const MAX_PAGE = 15;
 	$userlist = array(); 
 
 	//$sql = "SELECT * FROM tb_facebook_profile WHERE access_token != ''";
@@ -48,7 +47,7 @@
 
 			//Prevent incase update
 			$since_id= GetLastestPost($userlist[$i]['user_id']);
-			//echo "since_id:".$since_id."<br/>";
+			echo $since_id."<br/>";
 
 			if(GetFacebookPost($access_token, $userlist[$i]['user_id'], $since_id))
 			{
@@ -162,7 +161,7 @@
 
 				if($break) //no data, then stop looping
 					break;
-			}while($i!=MAX_PAGE);
+			}while($i!=15);
 			fwrite($log_file, "Complete adding post\r\n");	
 			return true;
 		}catch (Exception $e){
@@ -174,167 +173,162 @@
 
 	function GetFacebookComment($access_token, $fbid, $since_id)
 	{
-		global $fb, $log_file,$since_date;
+		global $fb, $log_file;
 
 		$fbpost = $fbcomment = $fblike	= array();
 
-		//echo "Post ID:".$fbpost[$i]."<br/><hr/>";
-		//print_r($fbpost[$i]);
-		//echo "<br/>";
+		$conn = CreateConnection();
+		$sql = "SELECT post_id, created_at FROM tb_facebook_post WHERE user_id= $fbid" ;
+		if($since_id!=null)
+			$sql .= " and created_at >= '$since_id'";
+		//echo $sql."<br/>";
+		
+		if($result = $conn->query($sql))
+		{
+			while($row = $result->fetch_assoc())
+			{	
+				array_push($fbpost,$row);
+			}
+		}
+		CloseConnection($conn);
 
-		$param	 = $fbid.'/feed?fields=id,created_time,comments{id,message,from,created_time,user_likes,like_count,attachment,comments.limit(200){id,message,from,created_time,user_likes,like_count,attachment,message_tags,application},message_tags}&limit=200';
-		//Prevent incase update
-		if($since_id!=null) //update more tweet data
-			$param .= '&since='.(strtotime($since_id)+7200);//2hours
-
-		$response = $fb->get($param, $access_token);
-		$feed = $response->getGraphEdge();
-
-		echo "feed:".count($feed)."<br/>";
-		if(count($feed)==0)
-			return true; 
-
-		$i=1;
-		$break = false;
-
-		try{
-			do{
-				if($i!=1)//next loop
-				{	
-					$feed = $fb->next($feed);
-					if(count($feed)==0)
-					{
-						$break = true;
-						break;
-					}
+		if(count($fbpost)>0)
+		{
+			for($i=0; $i<count($fbpost); $i++)
+			{
+		    	//echo "Post ID:".$fbpost[$i]."<br/><hr/>";
+		    	//print_r($fbpost[$i]);
+		    	//echo "<br/>";
+		        $param = $fbpost[$i]['post_id'].'/comments?fields=id,message,from,created_time,user_likes,like_count,attachment,comments.limit(200){id,message,from,created_time,user_likes,like_count,attachment,message_tags},message_tags&limit=200';
+		        try{
+			        $response = $fb->get($param, $access_token);
+					$comment= $response->getGraphEdge();
+				}catch (Exception $e){
+					//mysqli_query($conn,"ROLLBACK");
+					fwrite($log_file, "Post ID:".$fbpost[$i]['post_id']."\r\n".$e."\r\n");
+					$comment=null;
 				}
-				
-				$j=1;
-				foreach($feed as $p)
+				if($comment!=null)
 				{
+					$j=1;
+					foreach ($comment as $c) {
+						//echo $j.": ".$c->getField('id').$c->getField('message').date_format($c->getField('created_time'),'Y-m-d H:i:s')."<br/>";
 
-					$post = new post();
-					//fwrite($log_file, "Post ID ".$p->getField('id')."\r\n");
-					//echo "----Post ID ".$p->getField('id')."----<br/>";
-
-					$created_at = date_format($p->getField('created_time'),'Y-m-d H:i:s');
-					if(empty($p) || $created_at<$since_date)
-					{
-						$break = true;
-						break;
-					}
-
-					if($p->getField('comments')!=null)
-					{
-						foreach ($p->getField('comments') as $c) 
+						$comment = new comment();
+						$comment->comment_id 		= $c->getField('id');
+						$comment->parent_post_id 	= $fbpost[$i]['post_id'];
+						$comment->user_id			= $c->getField('from')->getField('id');
+						$comment->created_at 		= date_format($c->getField('created_time'),'Y-m-d H:i:s');
+						$comment->action 			= "comment";
+						$comment->total_like		= $c->getField('like_count');
+						$comment->total_reply		= count($c->getField('comments'));
+						$comment->message 			= $c->getField('message');;
+						$comment->media 			= $c->getField('attachment') != null ? $c->getField('attachment')->getField('type') : "text";
+						$comment->message_tags 		= count($c->getField('message_tags'));
+						
+						$fbcomment[]=$comment;
+						
+						//Get Comment Like
+						if($c->getField('user_likes'))
 						{
-							$comment = new comment();
-							$comment->comment_id 		= $c->getField('id');
-							$comment->parent_post_id 	= $p->getField('id');
-							$comment->user_id			= $c->getField('from')->getField('id');
-							$comment->created_at 		= date_format($c->getField('created_time'),'Y-m-d H:i:s');
-							$comment->action 			= "comment";
-							$comment->total_like		= $c->getField('like_count');
-							$comment->total_reply		= count($c->getField('comments'));
-							$comment->message 			= $c->getField('message');;
-							$comment->media 			= $c->getField('attachment') != null ? $c->getField('attachment')->getField('type') : "text";
-							$comment->message_tags 		= count($c->getField('message_tags'));
-							
-							$fbcomment[]=$comment;
+							$like = new like();
+							$like->parent_post_id 	= $c->getField('id');
+							$like->created_at 		= date_format($c->getField('created_time'),'Y-m-d H:i:s');
+							$like->action 			= "comment";
+							$fblike[] = $like;
+						}
 
-							//Get Comment Like
-							if($c->getField('user_likes'))
+						//Get reply comment
+						if(count($c->getField('comments'))>0)
+						{
+							foreach ($c->getField('comments') as $r) 
 							{
-								$like = new like();
-								$like->parent_post_id 	= $c->getField('id');
-								$like->created_at 		= date_format($c->getField('created_time'),'Y-m-d H:i:s');
-								$like->action 			= "comment";
-								$fblike[] = $like;
-							}
+								$reply = new comment();
+								$reply ->comment_id 	= $r->getField('id');
+								$reply ->parent_post_id = $c->getField('id');
+								$reply ->user_id		= $r->getField('from')->getField('id');
+								$reply ->created_at 	= date_format($r->getField('created_time'),'Y-m-d H:i:s');
+								$reply ->action 		= "reply";
+								$reply ->total_like		= $r->getField('like_count');
+								$reply ->message 		= $r->getField('message');;
+								$reply ->media 			= $r->getField('attachment') != null ? $c->getField('type') : "text";
+								$reply ->message_tags 	= count($c->getField('message_tags'));
 
-							//Get reply comment
-							if(count($c->getField('comments'))>0)
-							{
-								foreach ($c->getField('comments') as $r) 
+								$fbcomment[]=$reply ;
+
+								//Get Reply Like
+								if($r->getField('user_likes'))
 								{
-									$reply = new comment();
-									$reply ->comment_id 	= $r->getField('id');
-									$reply ->parent_post_id = $c->getField('id');
-									$reply ->user_id		= $r->getField('from')->getField('id');
-									$reply ->created_at 	= date_format($r->getField('created_time'),'Y-m-d H:i:s');
-									$reply ->action 		= "reply";
-									$reply ->total_like		= $r->getField('like_count');
-									$reply ->message 		= $r->getField('message');;
-									$reply ->media 			= $r->getField('attachment') != null ? $c->getField('type') : "text";
-									$reply ->message_tags 	= count($c->getField('message_tags'));
-
-									$fbcomment[]=$reply ;
-
-									//Get Reply Like
-									if($r->getField('user_likes'))
-									{
-										$like = new like();
-										$like->parent_post_id 	= $r->getField('id');
-										$like->created_at 		= date_format($r->getField('created_time'),'Y-m-d H:i:s');
-										$like->action 			= "reply";
-										$fblike[] = $like;
-									}
+									$like = new like();
+									$like->parent_post_id 	= $r->getField('id');
+									$like->created_at 		= date_format($r->getField('created_time'),'Y-m-d H:i:s');
+									$like->action 			= "reply";
+									$fblike[] = $like;
 								}
 							}
+						}
 
-						}
-					}					
-					if($j%50==0)//SaveToDb
-					{
-						if(count($fbcomment)>0)//SaveToDb
+						if($j%50==0)//SaveToDb
 						{
-							SaveFBComment($fbcomment,$fbid);
-							//fwrite($log_file, "Add ".count($fbcomment)."comments\r\n");
-							unset($fbcomment);
-							$fbcomment = array();
+							if(count($fbcomment)>0)//SaveToDb
+							{
+								SaveFBComment($fbcomment,$fbid);
+								//fwrite($log_file, "Add ".count($fbcomment)."comments\r\n");
+								unset($fbcomment);
+								$fbcomment = array();
+							}
+							if(count($fblike)>0)//SaveToDb
+							{
+								SaveFBLike($fblike, $fbid);
+								//fwrite($log_file, "Add ".count($fblike)."likes\r\n");
+								unset($fblike);
+								$fblike = array();
+							}
 						}
-						if(count($fblike)>0)//SaveToDb
-						{
-							SaveFBLike($fblike, $fbid);
-							//fwrite($log_file, "Add ".count($fblike)."likes\r\n");
-							unset($fblike);
-							$fblike = array();
-						}
+						$j++;
 					}
-					$j++;			
-				}//end for loop feed
-				$i++;
 
-				if(count($fbcomment)>0)//SaveToDb
-				{
-					SaveFBComment($fbcomment,$fbid);
-					//fwrite($log_file, "Add ".count($fbcomment)."comments\r\n");
-					unset($fbcomment);
-					$fbcomment = array();
+					/*$param = $fbpost[$i]['post_id'].'/likes?summary=true';
+					$response = $fb->get($param, $access_token);
+					$likepost= $response->getGraphEdge()->getMetaData()['summary'];
+
+					if($likepost['has_liked'])
+					{
+						$like = new like();
+						$like->parent_post_id 	= $fbpost[$i]['post_id'];
+						$like->created_at 		= $fbpost[$i]['created_at'];
+						$like->action 			= "post";
+						$fblike[] = $like; 
+						//SaveFBLike($like, $fbid);
+					}*/
+					//print_r($like);
+					//echo "total_like:".$like['total_count']." can_like:".$like['can_like']." has_like:".$like['has_liked']."<br/>";
+
+
+					/*echo "<br/>---COMMENT--<br/>";
+					print_r($fbcomment);
+					echo "<br/>---LIKE--<br/>";
+					print_r($fblike);*/
+					if(count($fbcomment)>0)//SaveToDb
+					{
+						SaveFBComment($fbcomment,$fbid);
+						//fwrite($log_file, "Add ".count($fbcomment)."comments\r\n");
+						unset($fbcomment);
+						$fbcomment = array();
+					}
+					if(count($fblike)>0)//SaveToDb
+					{
+						SaveFBLike($fblike, $fbid);
+						//fwrite($log_file, "Add ".count($fblike)."likes\r\n");
+						unset($fblike);
+						$fblike = array();
+					}
+					//Update Post Status
+					UpdatePost($fbpost[$i]['post_id'], 0, 1);
 				}
-				if(count($fblike)>0)//SaveToDb
-				{
-					SaveFBLike($fblike, $fbid);
-					//fwrite($log_file, "Add ".count($fblike)."likes\r\n");
-					unset($fblike);
-					$fblike = array();
-				}
-				//Update Post Status
-				//UpdatePost($fbpost[$i]['post_id'], 0, 1);
-
-				if($break) //no data, then stop looping
-					break;
-			}while($i!=MAX_PAGE);
-
-			fwrite($log_file, "Complete adding comment\r\n");	
-			return true;
-		}catch (Exception $e){
-			//mysqli_query($conn,"ROLLBACK");
-			fwrite($log_file, $e."\r\n");
-			return false;
-		}
-
-		//fwrite($log_file, "Complete add comment and like \r\n");
+			}//end for fbpost
+		}//end if $fbpost
+		fwrite($log_file, "Complete add comment and like \r\n");
 	}
 
 	function GetFacebookLike($access_token, $fbid, $since_id)
@@ -402,8 +396,9 @@
 	{
 		$conn= CreateConnection();
 		$sql = "SELECT * FROM tb_facebook_post WHERE user_id= $user_id AND created_at = (SELECT MAX(`created_at`) FROM tb_facebook_post)";
-		$result = $conn->query($sql);
 
+		$result = $conn->query($sql);
+		
 		if ($result->num_rows > 0) {
 			// output data of each row
 			$row = $result->fetch_assoc();
