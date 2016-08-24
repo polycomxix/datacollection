@@ -348,9 +348,9 @@ $(function(){
                 success: function(data){
                     console.log(data.status);
                     $(".screen-loading").hide();
-                    /*setTimeout(function(){
-                        window.location.href="./thanks.html";
-                    },2000);*/
+                    setTimeout(function(){
+                        window.location.href="./thanks.html?point="+data.total;
+                    },1000);
                     
                 },
                 error: function (jqXHR, exception) {

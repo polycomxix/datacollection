@@ -193,6 +193,7 @@ body {
   background-color: #fcf8e3;
   padding:10px;
 }
+.result-description p {font-size: 12px;}
 
 form .likert {
   list-style:none;
@@ -529,7 +530,7 @@ footer .site-info a{
       font-size: 14px;
     }
 
-    .survey-page .surver-page-container{
+    .survey-page .survey-page-container{
         padding-left: 0;
         padding-right: 0;
     }

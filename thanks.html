@@ -9,7 +9,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Data Collection Application</title>
+    <title>SNS Research - Thank you</title>
+    <link rel='shortcut icon' type='image/x-icon' href='./images/favicon.ico' />
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -36,42 +37,52 @@
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <!--<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button>-->
-                <a class="navbar-brand" href="./index.html">Data Collection Application</a>
+                </button>
+                <a class="navbar-brand" href="./">SNS Research</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <!--<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#about">About</a>
+                        <a href="./#overview">Research Overview</a>
                     </li>
                     <li>
-                        <a href="#services">Services</a>
+                        <a href="./#quiz">Questionnaire & Quizzes</a>
                     </li>
                     <li>
-                        <a href="#contact">Contact</a>
+                        <a href="./#about">About Us</a>
+                    </li>
+                    <li>
+                        <a href="./#contact">Contact us</a>
                     </li>
                 </ul>
-            </div>-->
+            </div>
             <!-- /.navbar-collapse -->
         </div>
         <!-- /.container -->
     </nav>
 
+
     <!-- Page Content -->
     <div class="container">
         <!-- Title -->
-        <div class="row jumbotron">
+        <div class="row jumbotron" style="margin-bottom:0px;">
             <div class="col-sm-12 thumbnail" style="padding:30px;">
                 <div class="row">
                     <div class="col-sm-7 col-sm-offset-1">
-                        <h2>Thank you for your cooperation. You are ...</h2>
-                        <h1 style="color:#ff5050;">CRAZY SNS FAN</h1> <!--NOVICE/NORMAL/BIG/CRAZY FAN-->
+                        <h2>Thank you for your cooperation.</h2>
+                        <h1 style="color:#ff5050;">Your score is <span class="score"></span></h1> <!--NOVICE/NORMAL/BIG/CRAZY FAN-->
+                        <div class="result-description">
+                            <p><strong>NONE 0 – 30 points</strong></p>
+                            <p><strong>MILD 31- 49 points</strong><br/>You are an average SNS user. You may surf the SNS a bit too long at times, but you have control over your usage.</p>
+                            <p><strong>MODERATE 50 -79 points</strong><br/>You are experiencing occasional or frequent problems because of the SNS. You should consider their full impact on your life.</p>
+                            <p><strong>SEVERE 80 – 100 points</strong><br/>Your SNS usage is causing significant problems in your life. You should evaluate the impact of the SNS on your life and address the problems directly caused by your SNS usage.</p>
+                        </div>
                         <div>
                             <div class="fb-share-button bt-sns" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button"></div>
                             <a class="twitter-share-button bt-sns" href="https://twitter.com/intent/tweet?text=Hello%20world">Tweet</a>
@@ -95,39 +106,21 @@
 
             <div class="col-md-4 col-sm-6 hero-feature">
                 <div class="thumbnail">
-                    <img src="http://placehold.it/800x500" alt="">
+                    <img src="./images/twitterquiz.jpg" alt="">
                     <div class="caption">
-                        <h3>SNS Usage Questionnaire</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                        <p>
-                            <a href="./survey.html" class="btn btn-primary">Do it</a>
-                        </p>
+                        <h3>How often do you Tweet?</h3>
+                        <button type="button"class="btn btn-info"  onclick="javascript:window.location.href = './quiz/twitter.html'">Let's start</button>  
+
                     </div>
                 </div>
             </div>
 
             <div class="col-md-4 col-sm-6 hero-feature">
                 <div class="thumbnail">
-                    <img src="http://placehold.it/800x500" alt="">
+                    <img src="./images/fbquiz.jpg" alt="">
                     <div class="caption">
-                        <h3>Facebook Quiz</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                        <p>
-                            <a href="#" class="btn btn-primary">Connect Facebook</a> 
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <img src="http://placehold.it/800x500" alt="">
-                    <div class="caption">
-                        <h3>Twitter Quiz</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                        <p>
-                            <a href="#" class="btn btn-primary">Connect Twitter</a> 
-                        </p>
+                        <h3>Popular FB profile picture</h3>
+                        <button type="button"class="btn btn-info" onclick="javascript:window.location.href = './quiz/facebook.html'">Let's start</button> 
                     </div>
                 </div>
             </div>
@@ -157,3 +150,21 @@
 </body>
 
 </html>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.urlParam = function(name){
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if (results==null){
+               return null;
+            }
+            else{
+               return results[1] || 0;
+            }
+        }
+        //console.log($.urlParam('point'));
+        if($.urlParam('point'))
+        {
+            $(".score").text($.urlParam('point'));
+        }
+    });
+</script>
