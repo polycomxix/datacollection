@@ -55,7 +55,7 @@
 			GetTwitterFavorite($connection, $userlist[$i]['user_id'], $timezone_offset);
 
 			//Update User
-			//UpdateReserveUser($userlist[$i]['user_id'],2);//finish
+			UpdateReserveUser($userlist[$i]['user_id'],2);//finish
 
 			fwrite($log_file, "----End Query-----\r\n");
 			fwrite($log_file, "Total execution time in seconds: " . (microtime(true) - $time_start)."\r\n");

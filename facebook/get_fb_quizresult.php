@@ -251,7 +251,7 @@
 			
 
 			switch ($year) {
-				case '2015':
+				case '2016':
 					if(count($p->getField('likes'))>$count[0])
 					{
 						$count[0] 	= count($p->getField('likes'));
@@ -263,7 +263,7 @@
 						}*/
 					}
 					break;
-				case '2014':
+				case '2015':
 					if(count($p->getField('likes'))>$count[1])
 					{
 						$count[1] 	= count($p->getField('likes'));
@@ -275,7 +275,7 @@
 						}*/
 					}
 					break;
-				case '2013':
+				case '2014':
 					if(count($p->getField('likes'))>$count[2])
 					{
 						$count[2] 	= count($p->getField('likes'));
@@ -287,7 +287,7 @@
 						}*/
 					}
 					break;
-				case '2012':
+				case '2013':
 					if(count($p->getField('likes'))>$count[3])
 					{
 						$count[3] 	= count($p->getField('likes'));
@@ -309,10 +309,10 @@
 		$result = array(
 						"success"	=>	true,
 						"content"	=>	array(
-								array("2012", isset($pic[3]) ? urlencode($pic[3]) : null, isset($count[3]) ? $count[3] : null),
-								array("2013", isset($pic[2]) ? urlencode($pic[2]) : null, isset($count[2]) ? $count[2] : null),
-								array("2014", isset($pic[1]) ? urlencode($pic[1]) : null, isset($count[1]) ? $count[1] : null),
-								array("2015", isset($pic[0]) ? urlencode($pic[0]) : null, isset($count[0]) ? $count[0] : null)
+								array("2013", isset($pic[3]) ? urlencode($pic[3]) : null, isset($count[3]) ? $count[3] : null),
+								array("2014", isset($pic[2]) ? urlencode($pic[2]) : null, isset($count[2]) ? $count[2] : null),
+								array("2015", isset($pic[1]) ? urlencode($pic[1]) : null, isset($count[1]) ? $count[1] : null),
+								array("2016", isset($pic[0]) ? urlencode($pic[0]) : null, isset($count[0]) ? $count[0] : null)
 						)
 		);
 		return $result;
