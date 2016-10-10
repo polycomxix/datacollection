@@ -168,25 +168,29 @@
 							$response_array['status'] = 'fail';
 							break;
 						}
-						switch ($rate) {
-							case 'always':
-								$point+= 5;
-								break;
-							case 'often':
-								$point+= 4;
-								break;
-							case 'frequently':
-								$point+= 3;
-								break;
-							case 'occasionally':
-								$point+= 2;
-								break;
-							case 'rarely':
-								$point+= 1;
-								break;
-							default:
-								$point += 0;
-								break;
+						if($i>=7)
+						{
+
+							switch ($rate) {
+								case 'always':
+									$point+= 5;
+									break;
+								case 'often':
+									$point+= 4;
+									break;
+								case 'frequently':
+									$point+= 3;
+									break;
+								case 'occasionally':
+									$point+= 2;
+									break;
+								case 'rarely':
+									$point+= 1;
+									break;
+								default:
+									$point += 0;
+									break;
+							}
 						}
 						$response_array['total'] = $point;
 					}
